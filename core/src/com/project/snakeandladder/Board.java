@@ -6,42 +6,80 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 
 import Helpers.Font;
 import Helpers.GameInfo;
-import Helpers.ImageResize;
 
 public class Board extends Table {
 
+    Label pawn;
+    Table table;
+    Actor temp;
+    Cell[] cells;
+
     public Board(){
+        cells = new Cell[100];
         setName("SnakeAndLadderBoard");
-
-
         Image bg= new Image(new Texture("bg.png"));
         bg.setColor(Color.valueOf("#fafca8"));
-        stack(bg,createBoard()).expandX().fillX().height(GameInfo.HEIGHT*0.61f);;
+        stack(bg,createBoard()).expandX().fillX().height(GameInfo.HEIGHT*0.61f);
 
+
+
+
+
+//        Stack stack = new Stack();
+//        stack.add(pawn);
+//        movePawnBy(99);
+//        table.debugAll();
+    }
+
+    public void movePawnBy(int roll){
+//        int r=100;
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = getNormalFont(GameInfo.WIDTH*0.04f);
+        labelStyle.fontColor = Color.BLACK;
+        pawn = new Label("X", labelStyle);
+        pawn.setAlignment(Align.center);
+
+        if(roll==99) {
+            temp = cells[roll].getActor();
+            cells[roll].clearActor();
+            cells[roll].setActor(pawn);
+        }
+        else{
+            cells[roll+1].setActor(temp);
+            temp=cells[roll].getActor();
+            cells[roll].clearActor();
+            cells[roll].setActor(pawn);
+        }
+
+
+
+        table.invalidateHierarchy();
 
     }
 
+
     private Table createBoard() {
-
-
         Label.LabelStyle style= new Label.LabelStyle();
         style.font=getNormalFont(GameInfo.WIDTH*0.01f);
         style.fontColor=Color.valueOf("#709104");
 
 
         int t=100;
-        Table table= new Table();
+        table= new Table();
         table.top().padTop(GameInfo.HEIGHT*0.004f).padBottom(GameInfo.HEIGHT*0.008f);
 
+        int index = 0;
         for(int i= 1;i<=10;i++)
         {
             for(int j=1;j<=10;j++){
@@ -52,22 +90,28 @@ public class Board extends Table {
                     if (j % 2 != 0) {
                         Image cellImgEven = new Image(new Texture("cell.png"));
                         cellImgEven.setColor(Color.valueOf("#dff964"));//odd
-                        table.stack(cellImgEven,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.057f).pad(GameInfo.WIDTH * 0.003f);
+                        numLbl.setName(String.valueOf(t));
+                        cells[index++] = table.stack(cellImgEven,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.057f).pad(GameInfo.WIDTH * 0.003f);
                     } else {
                         Image cellImgOdd = new Image(new Texture("cell.png"));
                         cellImgOdd.setColor(Color.valueOf("#b5e72c"));//odd
-                        table.stack(cellImgOdd,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.057f).pad(GameInfo.WIDTH * 0.003f);
+                        cells[index++] = table.stack(cellImgOdd,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.057f).pad(GameInfo.WIDTH * 0.003f);
+                        numLbl.setName(String.valueOf(t));
                     }
                 }
                 else{
                     if (j % 2== 0) {
                         Image cellImgEven = new Image(new Texture("cell.png"));
                         cellImgEven.setColor(Color.valueOf("#dff964"));//odd
-                        table.stack(cellImgEven,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
+                        cells[index++] =table.stack(cellImgEven,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
+
+                        numLbl.setName(String.valueOf(t));
+
                     } else {
                         Image cellImgOdd = new Image(new Texture("cell.png"));
                         cellImgOdd.setColor(Color.valueOf("#b5e72c"));//odd
-                        table.stack(cellImgOdd,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
+                        cells[index++] =table.stack(cellImgOdd,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
+                        numLbl.setName(String.valueOf(t));
                     }
                 }
                 if(i%2==0 ){
@@ -88,6 +132,7 @@ public class Board extends Table {
 
             table.row();
         }
+//        table.invalidateHierarchy();
 
 //table.debugAll();
         return table;

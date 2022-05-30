@@ -3,6 +3,7 @@ package com.project.snakeandladder;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,6 +16,8 @@ public class GameMain extends Game {
 	SpriteBatch batch;
 	Texture img;
 	private Stage stage;
+	private Board board;
+	int r= 100;
 	
 	@Override
 	public void create () {
@@ -22,9 +25,14 @@ public class GameMain extends Game {
 		stage= new Stage();
 		Table container = new Table();
 		container.setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
-		container.add(new Board());
+		board = new Board();
+		container.add(board);
 		stage.addActor(container);
 		Gdx.input.setInputProcessor(stage);
+
+
+
+
 //		container.debugAll();
 	}
 
@@ -36,6 +44,11 @@ public class GameMain extends Game {
 		batch.end();
 		stage.act();
 		stage.draw();
+
+		if(Gdx.input.justTouched()){
+			r--;
+			board.movePawnBy(r);
+		}
 
 	}
 	
