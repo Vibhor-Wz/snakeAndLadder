@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 
 import Helpers.Font;
 import Helpers.GameInfo;
@@ -26,7 +25,7 @@ public class Board extends Table {
     Cell[] cells;
 
     public Board(){
-        cells = new Cell[100];
+        cells = new Cell[101];
         setName("SnakeAndLadderBoard");
         Image bg= new Image(new Texture("bg.png"));
         bg.setColor(Color.valueOf("#fafca8"));
@@ -49,19 +48,16 @@ public class Board extends Table {
         labelStyle.fontColor = Color.BLACK;
         pawn = new Label("X", labelStyle);
         pawn.setAlignment(Align.center);
+        Stack stack= new Stack();
+        if(roll!=1) {
+            cells[roll - 1].setActor(temp);
+        }
 
-        if(roll==99) {
             temp = cells[roll].getActor();
             cells[roll].clearActor();
-            cells[roll].setActor(pawn);
-        }
-        else{
-            cells[roll+1].setActor(temp);
-            temp=cells[roll].getActor();
-            cells[roll].clearActor();
-            cells[roll].setActor(pawn);
-        }
-
+            stack.add(temp);
+            stack.add(pawn);
+            cells[roll].setActor(stack);
 
 
         table.invalidateHierarchy();
@@ -91,11 +87,11 @@ public class Board extends Table {
                         Image cellImgEven = new Image(new Texture("cell.png"));
                         cellImgEven.setColor(Color.valueOf("#dff964"));//odd
                         numLbl.setName(String.valueOf(t));
-                        cells[index++] = table.stack(cellImgEven,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.057f).pad(GameInfo.WIDTH * 0.003f);
+                        cells[t] = table.stack(cellImgEven,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.057f).pad(GameInfo.WIDTH * 0.003f);
                     } else {
                         Image cellImgOdd = new Image(new Texture("cell.png"));
                         cellImgOdd.setColor(Color.valueOf("#b5e72c"));//odd
-                        cells[index++] = table.stack(cellImgOdd,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.057f).pad(GameInfo.WIDTH * 0.003f);
+                        cells[t] = table.stack(cellImgOdd,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.057f).pad(GameInfo.WIDTH * 0.003f);
                         numLbl.setName(String.valueOf(t));
                     }
                 }
@@ -103,14 +99,14 @@ public class Board extends Table {
                     if (j % 2== 0) {
                         Image cellImgEven = new Image(new Texture("cell.png"));
                         cellImgEven.setColor(Color.valueOf("#dff964"));//odd
-                        cells[index++] =table.stack(cellImgEven,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
+                        cells[t] =table.stack(cellImgEven,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
 
                         numLbl.setName(String.valueOf(t));
 
                     } else {
                         Image cellImgOdd = new Image(new Texture("cell.png"));
                         cellImgOdd.setColor(Color.valueOf("#b5e72c"));//odd
-                        cells[index++] =table.stack(cellImgOdd,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
+                        cells[t] =table.stack(cellImgOdd,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
                         numLbl.setName(String.valueOf(t));
                     }
                 }
@@ -136,6 +132,11 @@ public class Board extends Table {
 
 //table.debugAll();
         return table;
+    }
+    private void Manage_Array_Indexing(){
+        for(int i=0;i<100;i++){
+
+        }
     }
     private BitmapFont getNormalFont(float size) {
         Texture texture = new Texture(Gdx.files.internal

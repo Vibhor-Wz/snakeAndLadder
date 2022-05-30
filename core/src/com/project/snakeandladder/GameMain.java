@@ -17,7 +17,8 @@ public class GameMain extends Game {
 	Texture img;
 	private Stage stage;
 	private Board board;
-	int r= 100;
+	int r= 1;
+	int iterate=0;
 	
 	@Override
 	public void create () {
@@ -46,8 +47,25 @@ public class GameMain extends Game {
 		stage.draw();
 
 		if(Gdx.input.justTouched()){
-			r--;
 			board.movePawnBy(r);
+			r++;
+//			if(iterate<9){
+//				r++;
+//				iterate++;
+//				if(iterate==10){
+//					r-=10;
+//				}
+//
+//			}
+//			else {
+//				r--;
+//				iterate++;
+//				if(iterate==20){
+//					iterate=0;
+//					r-=10;
+//				}
+//			}
+//
 		}
 
 	}
