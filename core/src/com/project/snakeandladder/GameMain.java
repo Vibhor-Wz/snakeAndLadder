@@ -49,23 +49,6 @@ public class GameMain extends Game {
 		if(Gdx.input.justTouched()){
 			board.movePawnBy(r);
 			r++;
-//			if(iterate<9){
-//				r++;
-//				iterate++;
-//				if(iterate==10){
-//					r-=10;
-//				}
-//
-//			}
-//			else {
-//				r--;
-//				iterate++;
-//				if(iterate==20){
-//					iterate=0;
-//					r-=10;
-//				}
-//			}
-//
 		}
 
 	}

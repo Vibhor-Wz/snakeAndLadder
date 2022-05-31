@@ -6,13 +6,18 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
+
+import java.util.Random;
 
 import Helpers.Font;
 import Helpers.GameInfo;
@@ -31,7 +36,7 @@ public class Board extends Table {
         bg.setColor(Color.valueOf("#fafca8"));
 
         stack(bg, createBoard()).expandX().fillX().height(GameInfo.HEIGHT * 0.61f);
-
+        layout();
 
     }
 
@@ -41,7 +46,7 @@ public class Board extends Table {
             if (actor instanceof Stack) {
                 Stack stack = (Stack) actor;
                 if (stack.getChildren().size >= 2) {
-                    Actor pawn;
+                    final Actor pawn;
                     if (stack.getChildren().size == 2) {
                         Image pawnImg = new Image(new Texture("blue.png"));
                         Table t = new Table();
@@ -51,8 +56,20 @@ public class Board extends Table {
                     } else {
                         pawn = stack.getChild(2);
                     }
-                    Stack nextCell = (Stack) cells[roll].getActor();
-                    nextCell.add(pawn);
+                    final Stack nextCell = (Stack) cells[roll].getActor();
+                    pawn.remove();
+                    pawn.setPosition(stack.getX(),stack.getY());
+                    addActor(pawn);
+                    pawn.addAction(Actions.sequence(
+                            Actions.moveTo(nextCell.getX(),nextCell.getY(),0.4f),
+                            Actions.run(new Runnable() {
+                                @Override
+                                public void run() {
+                                    nextCell.add(pawn);
+                                }
+                            })
+                    ));
+
                 }
             } else {
 
@@ -84,7 +101,7 @@ public class Board extends Table {
         table = new Table();
         table.top().padTop(GameInfo.HEIGHT * 0.004f).padBottom(GameInfo.HEIGHT * 0.008f);
 
-        int index = 0;
+
         for (int i = 1; i <= 10; i++) {
             for (int j = 1; j <= 10; j++) {
 
@@ -133,20 +150,43 @@ public class Board extends Table {
 
             table.row();
         }
-//        table.invalidateHierarchy();
+        table.layout();
+        Random random = new Random();
+        int x = random.nextInt(5-3)+3;
+        Array<Image> a=createLadder(x);
+        for (Image y : a){
+            table.addActor(y);
+        }
 
-        table.addActor(createLadder());
-//table.debugAll();
         return table;
     }
 
-    private Image createLadder() {
-        Image ladder = new Image(new Texture("ladder.png"));
-        ladder.setSize(30, 50);
-        ladder.setPosition(getX(), getY());
-        ladder.setColor(Color.GOLDENROD);
+    private Array<Image> createLadder(int laddersNumber) {
+        Array <Image> a= new Array<>(laddersNumber);
+        Random random= new Random();
 
-        return ladder;
+        int cellPositionsOfLadder[] = new int[laddersNumber];
+        for(int i=0;i<laddersNumber;i++) {
+            cellPositionsOfLadder[i] = random.nextInt(69 - 3) + 3;
+        }
+        Vector2[] vector2s= new Vector2[laddersNumber];
+        for(int i=0;i<laddersNumber;i++) {
+            Stack stack = (Stack) cells[cellPositionsOfLadder[i]].getActor();
+            vector2s[i]=new Vector2(stack.getX(),stack.getY());
+        }
+
+        for(int i=0;i<laddersNumber;i++) {
+            Image ladder = new Image(new Texture("ladder.png"));
+            ladder.setSize(GameInfo.WIDTH * 0.1f, GameInfo.HEIGHT * 0.2f);
+            if(-vector2s[i].y>getX()+getHeight()-ladder.getHeight()){
+                vector2s[i].y=vector2s[i].y+ladder.getHeight();
+            }
+            ladder.setPosition(vector2s[i].x, (-vector2s[i].y));
+            ladder.setAlign(Align.center);
+
+            a.add(ladder);
+        }
+        return a;
     }
 
     private BitmapFont getNormalFont(float size) {
