@@ -17,7 +17,7 @@ public class GameMain extends Game {
 	Texture img;
 	private Stage stage;
 	private Board board;
-	int r= 1;
+	int r= 0;
 	int iterate=0;
 	
 	@Override
