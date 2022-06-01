@@ -28,6 +28,7 @@ public class Board extends Table {
     Table table;
     Actor temp;
     Cell[] cells;
+    private Vector2 vector2s;
 
     public Board() {
         cells = new Cell[100];
@@ -36,7 +37,7 @@ public class Board extends Table {
         bg.setColor(Color.valueOf("#fafca8"));
 
         stack(bg, createBoard()).expandX().fillX().height(GameInfo.HEIGHT * 0.61f);
-        layout();
+//        layout();
 
     }
 
@@ -60,8 +61,11 @@ public class Board extends Table {
                     pawn.remove();
                     pawn.setPosition(stack.getX(),stack.getY());
                     addActor(pawn);
+                    vector2s= new Vector2();
+                    vector2s.x=stack.getX();
+                    vector2s.y=stack.getY();
                     pawn.addAction(Actions.sequence(
-                            Actions.moveTo(nextCell.getX(),nextCell.getY(),0.4f),
+                            Actions.moveTo(nextCell.getX(),nextCell.getY(),0.3f),
                             Actions.run(new Runnable() {
                                 @Override
                                 public void run() {
@@ -86,8 +90,7 @@ public class Board extends Table {
                 stack.add(t);
             }
         }
-
-
+       
     }
 
 
