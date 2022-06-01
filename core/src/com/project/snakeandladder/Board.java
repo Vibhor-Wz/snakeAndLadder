@@ -3,6 +3,7 @@ package com.project.snakeandladder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -24,14 +25,15 @@ import Helpers.GameInfo;
 
 public class Board extends Table {
 
-    Image pawn;
     Table table;
-    Actor temp;
     Cell[] cells;
-    private Vector2 vector2s;
+
+
+//    Array<Actor> pawns= new Array<>();
 
     public Board() {
         cells = new Cell[100];
+
         setName("SnakeAndLadderBoard");
         Image bg = new Image(new Texture("bg.png"));
         bg.setColor(Color.valueOf("#fafca8"));
@@ -42,6 +44,7 @@ public class Board extends Table {
     }
 
     public void movePawnBy(int roll) {
+
         if (roll > 0) {
             Actor actor = cells[roll - 1].getActor();
             if (actor instanceof Stack) {
@@ -53,23 +56,25 @@ public class Board extends Table {
                         Table t = new Table();
                         t.add(pawnImg).width(getWidth() * 0.05f).height(getHeight() * 0.085f);
                         pawn = t;
+//                        pawns.add(pawn);
 
                     } else {
                         pawn = stack.getChild(2);
+//                        pawns.add(pawn);
                     }
                     final Stack nextCell = (Stack) cells[roll].getActor();
                     pawn.remove();
+//                    pawns.removeValue(pawn,true);
                     pawn.setPosition(stack.getX(),stack.getY());
                     addActor(pawn);
-                    vector2s= new Vector2();
-                    vector2s.x=stack.getX();
-                    vector2s.y=stack.getY();
+//                    pawns.add(pawn);
                     pawn.addAction(Actions.sequence(
                             Actions.moveTo(nextCell.getX(),nextCell.getY(),0.3f),
                             Actions.run(new Runnable() {
                                 @Override
                                 public void run() {
                                     nextCell.add(pawn);
+//                                    pawns.add(pawn);
                                 }
                             })
                     ));
@@ -88,9 +93,10 @@ public class Board extends Table {
                 t.add(pawnImg).width(getWidth() * 0.05f).height(getHeight() * 0.085f);
 
                 stack.add(t);
+//                pawns.add(t);
             }
         }
-       
+
     }
 
 
@@ -153,15 +159,17 @@ public class Board extends Table {
 
             table.row();
         }
-        table.layout();
+
+
+        return table;
+    }
+    public void initLadder(){
         Random random = new Random();
         int x = random.nextInt(5-3)+3;
         Array<Image> a=createLadder(x);
         for (Image y : a){
             table.addActor(y);
         }
-
-        return table;
     }
 
     private Array<Image> createLadder(int laddersNumber) {
@@ -170,12 +178,26 @@ public class Board extends Table {
 
         int cellPositionsOfLadder[] = new int[laddersNumber];
         for(int i=0;i<laddersNumber;i++) {
-            cellPositionsOfLadder[i] = random.nextInt(69 - 3) + 3;
+            if(!(i==0)) {
+                cellPositionsOfLadder[i]= random.nextInt(69 - 3) + 3;
+                for (int j = 0; j < i; j++) {
+
+                    if(cellPositionsOfLadder[i]/10==cellPositionsOfLadder[j]/10 ) {
+                        cellPositionsOfLadder[i] = random.nextInt(69 - 3) + 3;
+                        j--;
+                        continue;
+                    }
+                }
+            }
+            else {
+                cellPositionsOfLadder[i] = random.nextInt(69 - 3) + 3;
+            }
         }
         Vector2[] vector2s= new Vector2[laddersNumber];
         for(int i=0;i<laddersNumber;i++) {
+
             Stack stack = (Stack) cells[cellPositionsOfLadder[i]].getActor();
-            vector2s[i]=new Vector2(stack.getX(),stack.getY());
+            vector2s[i]=new Vector2(stack.getX(),stack.getY()+cells[0].getMinWidth()/2f);
         }
 
         for(int i=0;i<laddersNumber;i++) {
@@ -184,12 +206,67 @@ public class Board extends Table {
             if(-vector2s[i].y>getX()+getHeight()-ladder.getHeight()){
                 vector2s[i].y=vector2s[i].y+ladder.getHeight();
             }
-            ladder.setPosition(vector2s[i].x, (-vector2s[i].y));
+            ladder.setPosition(vector2s[i].x, vector2s[i].y);
             ladder.setAlign(Align.center);
+            int x= random.nextInt(45 -(-45))+(-45);
+            ladder.setRotation(x);
 
             a.add(ladder);
         }
         return a;
+    }
+    public void initSnake(){
+        Random random = new Random();
+        int x = random.nextInt(5-3)+3;
+        Array<Image> a=createSnake(x);
+        for (Image y : a){
+            table.addActor(y);
+        }
+    }
+    private Array<Image> createSnake(int snakesNumber) {
+        Array <Image> a= new Array<>(snakesNumber);
+        Random random= new Random();
+
+        int cellPositionsOfSnake[] = new int[snakesNumber];
+        for(int i=0;i<snakesNumber;i++) {
+            if(!(i==0)) {
+                cellPositionsOfSnake[i]= random.nextInt(69 - 3) + 3;
+                for (int j = 0; j < i; j++) {
+
+                    if(cellPositionsOfSnake[i]/10==cellPositionsOfSnake[j]/10 ) {
+                        cellPositionsOfSnake[i] = random.nextInt(69 - 3) + 3;
+                        j--;
+                        continue;
+                    }
+                }
+            }
+            else {
+                cellPositionsOfSnake[i] = random.nextInt(69 - 3) + 3;
+            }
+        }
+        Vector2[] vector2s= new Vector2[snakesNumber];
+        for(int i=0;i<snakesNumber;i++) {
+            Stack stack = (Stack) cells[cellPositionsOfSnake[i]].getActor();
+            vector2s[i]=new Vector2(stack.getX(),stack.getY()+cells[0].getMinWidth()/2f);
+        }
+
+        for(int i=0;i<snakesNumber;i++) {
+            Image Snake = new Image(new Texture("Snake.png"));
+            Snake.setSize(GameInfo.WIDTH * 0.1f, GameInfo.HEIGHT * 0.24f);
+            if(-vector2s[i].y>getX()+getHeight()-Snake.getHeight()){
+                vector2s[i].y=vector2s[i].y+Snake.getHeight();
+            }
+            Snake.setPosition(vector2s[i].x, vector2s[i].y);
+            Snake.setAlign(Align.center);
+            int x= random.nextInt(45 -(-45))+(-45);
+            Snake.setRotation(x);
+
+            a.add(Snake);
+        }
+        return a;
+    }
+    private double  calculateDistanceBetweenPoints(double  x1,double y1, double x2, double y2){
+        return Math.sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
     }
 
     private BitmapFont getNormalFont(float size) {
@@ -201,4 +278,12 @@ public class Board extends Table {
         return font;
     }
 
-}
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+
+
+        }
+
+    }
+

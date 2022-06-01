@@ -31,6 +31,14 @@ public class GameMain extends Game {
 		stage.addActor(container);
 		Gdx.input.setInputProcessor(stage);
 
+		Gdx.app.postRunnable(new Runnable() {
+			@Override
+			public void run() {
+				board.initLadder();
+				board.initSnake();
+			}
+		});
+
 
 
 
