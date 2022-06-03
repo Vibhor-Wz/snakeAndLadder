@@ -27,7 +27,8 @@ public class Board extends Table {
 
     Table table;
     Cell[] cells;
-
+    int ladderStartPos[];
+    int ladderEndPos[];
 
 //    Array<Actor> pawns= new Array<>();
 
@@ -56,25 +57,20 @@ public class Board extends Table {
                         Table t = new Table();
                         t.add(pawnImg).width(getWidth() * 0.05f).height(getHeight() * 0.085f);
                         pawn = t;
-//                        pawns.add(pawn);
 
                     } else {
                         pawn = stack.getChild(2);
-//                        pawns.add(pawn);
                     }
                     final Stack nextCell = (Stack) cells[roll].getActor();
                     pawn.remove();
-//                    pawns.removeValue(pawn,true);
                     pawn.setPosition(stack.getX(),stack.getY());
                     addActor(pawn);
-//                    pawns.add(pawn);
                     pawn.addAction(Actions.sequence(
                             Actions.moveTo(nextCell.getX(),nextCell.getY(),0.3f),
                             Actions.run(new Runnable() {
                                 @Override
                                 public void run() {
                                     nextCell.add(pawn);
-//                                    pawns.add(pawn);
                                 }
                             })
                     ));
@@ -166,54 +162,111 @@ public class Board extends Table {
     public void initLadder(){
         Random random = new Random();
         int x = random.nextInt(5-3)+3;
-        Array<Image> a=createLadder(x);
-        for (Image y : a){
+        Array<Table> a = createLadder(x);
+        for (Table y : a){
             table.addActor(y);
         }
     }
 
-    private Array<Image> createLadder(int laddersNumber) {
-        Array <Image> a= new Array<>(laddersNumber);
-        Random random= new Random();
+    private Array<Table> createLadder(int laddersNumber) {
+        Array <Table> a= new Array<>(laddersNumber);
+       getStartAndEndOfLadders(laddersNumber);
 
-        int cellPositionsOfLadder[] = new int[laddersNumber];
-        for(int i=0;i<laddersNumber;i++) {
-            if(!(i==0)) {
-                cellPositionsOfLadder[i]= random.nextInt(69 - 3) + 3;
-                for (int j = 0; j < i; j++) {
-
-                    if(cellPositionsOfLadder[i]/10==cellPositionsOfLadder[j]/10 ) {
-                        cellPositionsOfLadder[i] = random.nextInt(69 - 3) + 3;
-                        j--;
-                        continue;
-                    }
-                }
-            }
-            else {
-                cellPositionsOfLadder[i] = random.nextInt(69 - 3) + 3;
-            }
-        }
         Vector2[] vector2s= new Vector2[laddersNumber];
         for(int i=0;i<laddersNumber;i++) {
 
-            Stack stack = (Stack) cells[cellPositionsOfLadder[i]].getActor();
-            vector2s[i]=new Vector2(stack.getX(),stack.getY()+cells[0].getMinWidth()/2f);
+            Stack stack = (Stack) cells[ladderStartPos[i]].getActor();
+
+            vector2s[i]=new Vector2(getX()+stack.getX()+(cells[0].getMinWidth()*0.5f)
+                    ,getY()+stack.getY());
         }
 
         for(int i=0;i<laddersNumber;i++) {
-            Image ladder = new Image(new Texture("ladder.png"));
-            ladder.setSize(GameInfo.WIDTH * 0.1f, GameInfo.HEIGHT * 0.2f);
-            if(-vector2s[i].y>getX()+getHeight()-ladder.getHeight()){
-                vector2s[i].y=vector2s[i].y+ladder.getHeight();
-            }
+            Table ladder = new Table();
+            ladder.setTransform(true);
+            Stack stack = (Stack) cells[ladderStartPos[i]].getActor();
+            Vector2 startCoordinates= new Vector2();
+            startCoordinates.add(stack.getX()
+                    ,stack.getY());
+            Stack endStack = (Stack) cells[ladderEndPos[i]].getActor();
+            Vector2 endCoordinates= new Vector2();
+            endCoordinates.add(endStack.getX(),endStack.getY());
+
+            double distanceOFStartAndEnd=calculateDistanceBetweenPoints(startCoordinates.x,startCoordinates.y
+                    ,endCoordinates.x,endCoordinates.y);
+            ladder.add(drawLadder(distanceOFStartAndEnd));
+
             ladder.setPosition(vector2s[i].x, vector2s[i].y);
-            ladder.setAlign(Align.center);
-            int x= random.nextInt(45 -(-45))+(-45);
-            ladder.setRotation(x);
+
+            ladder.setRotation((float) Math.toDegrees(Math.atan2(endCoordinates.y-startCoordinates.y
+                    ,endCoordinates.x-startCoordinates.x)));
 
             a.add(ladder);
         }
         return a;
+    }
+    private void getStartAndEndOfLadders(int laddersNumber){
+        Random random= new Random();
+        ladderStartPos = new int[laddersNumber];
+        ladderEndPos = new int[laddersNumber];
+
+        for(int i=0;i<laddersNumber;i++) {
+            if(!(i==0)) {
+                ladderStartPos[i]= random.nextInt(59 - 3) + 3;
+                ladderEndPos[i]= random.nextInt(97 - 69) + 69;
+
+                for (int j = 0; j < i; j++) {
+
+                    if(ladderStartPos[i]/10== ladderStartPos[j]/10 ||
+                            ladderEndPos[i]/10== ladderEndPos[j]/10) {
+
+                        ladderStartPos[i] = random.nextInt(59 - 3) + 3;
+                        ladderEndPos[i]= random.nextInt(97 - 69) + 69;
+                        j--;
+                    }
+                }
+            }
+            else {
+                ladderStartPos[i] = random.nextInt(59 - 3) + 3;
+                ladderEndPos[i]= random.nextInt(97 - 69) + 69;
+
+            }
+        }
+
+    }
+    private Table drawLadder(double height){
+        Table ladder= new Table();
+        ladder.debugAll();
+
+        Image head= new Image(new Texture("SnakeAndLadder/Stairs-top.png"));
+        Table headTable= new Table();
+        headTable.add(head).width(cells[0].getMinWidth()*0.8f).height(cells[0].getMinHeight()*0.2f);
+        ladder.add(headTable).row();
+
+
+        height = height-(2*cells[0].getMinHeight());
+        if(height<1){
+            height=cells[0].getMinHeight()*0.5f;
+        }
+
+        long NumOfMidRequired= Math.round(height/(cells[0].getMinHeight()*0.5f));
+        for (int i= 0;i<NumOfMidRequired;i++){
+            Image medial = new Image(new Texture("SnakeAndLadder/Stairs.png"));
+            Table medialTable= new Table();
+            medialTable.add(medial).width(cells[0].getMinWidth()*0.8f).height(cells[0].getMinHeight()*0.5f);
+            ladder.add(medialTable).expandY().fillY().row();
+        }
+
+
+        TextureRegion textureRegion = new TextureRegion(new Texture("SnakeAndLadder/Stairs-top.png"));
+        textureRegion.flip(false, true);
+
+        Image bottom = new Image(textureRegion);
+        Table bottomTable= new Table();
+        bottomTable.add(bottom).width(cells[0].getMinWidth()*0.8f).height(cells[0].getMinHeight()*0.2f);
+        ladder.add(bottomTable).expandY().fillY();
+//Ladder.debugAll();
+    return ladder;
     }
     public void initSnake(){
         Random random = new Random();
@@ -236,7 +289,7 @@ public class Board extends Table {
                     if(cellPositionsOfSnake[i]/10==cellPositionsOfSnake[j]/10 ) {
                         cellPositionsOfSnake[i] = random.nextInt(69 - 3) + 3;
                         j--;
-                        continue;
+
                     }
                 }
             }
