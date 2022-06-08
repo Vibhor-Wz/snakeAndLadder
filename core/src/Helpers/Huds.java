@@ -6,28 +6,32 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-
-import Helpers.Font;
-import Helpers.GameInfo;
+import com.project.snakeandladder.Board;
 
 public class Huds extends Table {
     private Label numberOFMovesLeft;
     private Label movePawnLbl;
     private Label movesLeftLbl;
-    private Label player1DiceNumber;
-    private Label player2DiceNumber;
-    private Table player1HighlightedTbl;
-    private Table player2HighlightedTbl;
+    private Stack pawnBlueStack;
+    private Stack pawnGreenStack;
+    private Array<Table> pawnBlueArray = new Array<>();
+    private Array<Table> pawnGreenArray = new Array<>();
+    private int numberOfBluePawnLeft;
+    private int numberOfGreenPawnLeft;
+    private Board board;
     public Huds(){
         setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
-
-        debugAll();
+        board= new Board();
         Table moveLeftTbl= new Table();
         numberOFMovesLeft= new Label("18", getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.055f));
         movesLeftLbl = new Label("MOVES LEFT",getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.02f));
@@ -36,15 +40,98 @@ public class Huds extends Table {
         moveLeftTbl.add(movesLeftLbl).width(GameInfo.WIDTH*0.15f).top().padTop(GameInfo.HEIGHT*0.01f);
         add(moveLeftTbl).top().expandX().fillX().row();
         add(createBottom()).bottom().expand().fill();
-
-
+        addListenersToPawns();
+//        System.out.print();
     }
+    private void addListenersToPawns(){
+        numberOfBluePawnLeft =3;
+        pawnBlueStack.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (numberOfBluePawnLeft >0) {
+                    board.movePawnBy(1, pawnBlueArray.get(numberOfBluePawnLeft -1));
+
+
+//                    pawnBlueStack.removeActor(pawnBlueArray.get(numberOfBluePawnLeft -1));
+//                    pawnBlueStack.removeActorAt(numberOfBluePawnLeft -1,false);
+
+                    numberOfBluePawnLeft--;
+                }
+            }
+        });
+
+//        numberOfGreenPawnLeft =3;
+//        pawnGreenStack.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                if (numberOfGreenPawnLeft >0) {
+//
+//                    board.movePawnBy(1, pawnGreenArray.get(numberOfGreenPawnLeft -1));
+//                    pawnGreenStack.removeActor(pawnGreenArray.get(numberOfGreenPawnLeft -1));
+////                    pawnGreenStack.removeActorAt(numberOfGreenPawnLeft -1,false);
+//                    numberOfGreenPawnLeft--;
+//                }
+//
+//            }
+//        });
+//        addListenerToSpecificPawn();
+    }
+
+    private void addListenerToSpecificPawn() {
+
+        pawnGreenArray.get(0).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                board.movePawnBy(1,pawnGreenArray.get(0));
+            }
+        });
+
+        pawnGreenArray.get(1).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                board.movePawnBy(1,pawnGreenArray.get(1));
+            }
+        });
+
+        pawnGreenArray.get(2).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                board.movePawnBy(1,pawnGreenArray.get(2));
+            }
+        });
+
+//        Blue Pawn
+
+        pawnBlueArray.get(0).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                board.movePawnBy(1,pawnBlueArray.get(0));
+            }
+        });
+
+        pawnBlueArray.get(1).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                board.movePawnBy(1,pawnBlueArray.get(1));
+            }
+        });
+
+        pawnBlueArray.get(2).addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                board.movePawnBy(1,pawnBlueArray.get(2));
+            }
+        });
+    }
+
     private Table createBottom(){
         Table mainTable= new Table();
         mainTable.bottom();
-        mainTable.debugAll();
-        mainTable.add(getDiceWithRollTbl("blue",true));
-        mainTable.add(getDiceWithRollTbl("Green",false)).row();
+
+        mainTable.add(getDiceWithRollTbl("blue",true)).expandX().fillX();
+        mainTable.add(getDiceWithRollTbl("Green",false)).expandX().fillX().row();
+        mainTable.add(getScoreBoardOfPlayers("Vibhor",true)).expandX().fillX();
+        mainTable.add(getScoreBoardOfPlayers("Vibhor2",false)).expandX().fillX();
         return mainTable;
     }
     private Table getDiceWithRollTbl(String pawnColor,boolean playerTurn){
@@ -79,7 +166,8 @@ public class Huds extends Table {
 
     private Table getPawnAndDiceRollTbl(String pawnColor){
         Table table= new Table();
-        Array<Table> a= new Array<>();
+         /*pawnBlueArray = new Array<>();
+         pawnGreenArray= new Array<>();*/
         for (int i=0;i<3;i++){
             Image pawnImg = new Image(new Texture(pawnColor+".png"));
             Table t = new Table();
@@ -93,14 +181,34 @@ public class Huds extends Table {
             else {
                 t.align(Align.right);
             }
-            a.add(t);
+            if(pawnColor.equals("blue")) {
+                pawnBlueArray.add(t);
+            }
+            else{
+                pawnGreenArray.add(t);
+            }
         }
-        Stack stack= new Stack();
-        for (Table b : a) {
-            stack.add(b);
+        if(pawnColor.equals("blue")) {
+            pawnBlueStack = new Stack();
+            for (Table b : pawnBlueArray) {
+                pawnBlueStack.add(b);
+            }
+            table.add(pawnBlueStack).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
         }
-        table.add(stack).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
+        else {
+            pawnGreenStack = new Stack();
+            for (Table b : pawnGreenArray) {
+                pawnGreenStack.add(b);
+            }
+            table.add(pawnGreenStack).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
+        }
+//        if(pawnColor.equals("blue")) {
+//            table.add(pawnBlueStack).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
+//        }
+//        else {
+//            table.add(pawnGreenStack).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
 
+//        }
         Label diceRoll= new Label("5",getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.03f));
         table.add(diceRoll);
 
@@ -108,18 +216,47 @@ public class Huds extends Table {
     }
 
 
-    private Table getScoreBoardOfPlayer1(String playerName){
+    private Table getScoreBoardOfPlayers(String playerName, boolean player1){
         Table table= new Table();
-       table.add(getPlayerNameAndPicture(playerName));
 
+       table.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
+       if(player1){
+           table.add(getScoreDetailsOfPlayer1()).top().expandY().fill();
+       }
+       else {
+           table.add(getScoreDetailsOfPlayer2()).top().expandY().fill();
+       }
+
+        return table;
+    }
+    private Table getScoreDetailsOfPlayer1(){
+        Table table = new Table();
+        table.top();
         Table infoIcon= new Table();
         Image infoImg= new Image(new Texture("info.png"));
-        infoIcon.add(infoImg).width(GameInfo.WIDTH*0.01f).height(GameInfo.WIDTH*0.01f);
-
-
+        infoIcon.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
 
         table.add(infoIcon).row();
+        Label scorePlayer1 = new Label("84",getLabelStyle(Color.SKY,GameInfo.WIDTH*0.042f));
+        table.add(scorePlayer1).row();
 
+        Label scoreTxt = new Label("SCORE",getLabelStyle(Color.SKY, GameInfo.WIDTH*0.023f));
+        table.add(scoreTxt);
+        return table;
+    }
+    private Table getScoreDetailsOfPlayer2(){
+        Table table = new Table();
+        table.top();
+        Table infoIcon= new Table();
+        Image infoImg= new Image(new Texture("info.png"));
+        infoIcon.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
+
+        table.add(infoIcon).top().row();
+        Label scorePlayer2 = new Label("10",getLabelStyle(Color.GREEN,GameInfo.WIDTH*0.042f));
+        table.add(scorePlayer2).row();
+
+        Label scoreTxt = new Label("SCORE",getLabelStyle(Color.SKY, GameInfo.WIDTH*0.023f));
+        table.add(scoreTxt);
         return table;
     }
     private Table getPlayerNameAndPicture(String playerName){
@@ -129,7 +266,7 @@ public class Huds extends Table {
 
         Table playerPicture=new Table();
         Image playerImg= new Image(new Texture("circle.png"));
-        playerPicture.add(playerImg).width(GameInfo.WIDTH*0.1f).height(GameInfo.WIDTH*0.1f);
+        playerPicture.add(playerImg).width(GameInfo.WIDTH*0.2f).height(GameInfo.WIDTH*0.2f);
         table.add(playerPicture);
         return table;
     }

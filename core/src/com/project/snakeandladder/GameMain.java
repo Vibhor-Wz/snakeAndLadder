@@ -8,41 +8,75 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import Helpers.GameInfo;
 import Helpers.Huds;
 
 public class GameMain extends Game {
 	SpriteBatch batch;
-	Texture img;
+
 	private Stage stage;
 	private Board board;
 	int r= 0;
-	int iterate=0;
-	
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		stage= new Stage();
-		Table container = new Table();
+		stage= new Stage(new FitViewport(GameInfo.WIDTH,GameInfo.HEIGHT));
+		final Table container = new Table();
 		container.setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
-//		board = new Board();
-//		container.add(board);
+
+		Stack stack= new Stack();
+		stack.setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
+
+		Table hudsContainer = new Table();
+		hudsContainer.setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
+		final Table boardTable= new Table();
+		boardTable.top().padTop(GameInfo.HEIGHT * 0.1f);
+		board = new Board();
+		boardTable.add(board).expandX().fillX();
+
 		Huds huds= new Huds();
-		container.add(huds).top().expandX().fillX().expandY().fillY();
+
+		hudsContainer.add(huds).top().expandX().fillX().expandY().fillY();
+		stack.add(hudsContainer);
+		container.add(stack).expand().fill();
+		stack.add(boardTable);
+		boardTable.pack();
+
 		stage.addActor(container);
 
 		Gdx.input.setInputProcessor(stage);
+		board.initLadder();
 
 //		Gdx.app.postRunnable(new Runnable() {
 //			@Override
 //			public void run() {
-//				board.initLadder();
+//				container.invalidate();
+//
 ////				board.initSnake();
 //			}
 //		});
+
+//		Timer.schedule(new Timer.Task() {
+//			@Override
+//			public void run() {
+//				Gdx.app.postRunnable(new Runnable() {
+//					@Override
+//					public void run() {
+//						board.initLadder();
+//					}
+//				});
+//			}
+//		},2.0f);
 
 
 
@@ -53,15 +87,16 @@ public class GameMain extends Game {
 	@Override
 	public void render () {
 		ScreenUtils.clear(Color.valueOf("#0d4345"));
-		batch.begin();
 
-		batch.end();
 		stage.act();
 		stage.draw();
 
 //		if(Gdx.input.justTouched()){
-//			board.movePawnBy(r);
-//			r++;
+//
+//				board.movePawnBy(r);
+//				r++;
+//
+//
 //		}
 
 	}
@@ -69,6 +104,6 @@ public class GameMain extends Game {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
+
 	}
 }
