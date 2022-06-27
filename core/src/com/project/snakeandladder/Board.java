@@ -9,18 +9,17 @@ import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import Helpers.Font;
@@ -29,10 +28,14 @@ import Helpers.GameInfo;
 public class Board extends Table {
 
     Table table;
-
     private Cell[] cells;
     int ladderStartPos[];
     int ladderEndPos[];
+    int snakeStartPos[];
+    int snakeEndPos[];
+    Array<Integer> cellsOccupied= new Array<>();
+    private boolean ladderInitialized = false;
+    private boolean snakeInitialized = false;
 
     public Board() {
         cells = new Cell[100];
@@ -42,24 +45,15 @@ public class Board extends Table {
         bg.setColor(Color.valueOf("#fafca8"));
 
         stack(bg, createBoard()).expandX().fillX().height(GameInfo.HEIGHT * 0.61f);
-
+        pack();
+//        initLadder();
 
     }
 
     public void movePawnBy(int roll, Table t) {
 
-        Cell cell = table.getCells().get(0);
-        Stack s = (Stack) cell.getActor();
-        s.clear();
 
-        Image image = new Image(new Texture("blue.png"));
-        /*image.toFront();*/
-        s.add(image);
-
-//        table.invalidate();
-        table.invalidateHierarchy();
-
-        /*if (roll > 0) {
+        if (roll > 0) {
             Actor actor = cells[roll - 1].getActor();
             if (actor instanceof Stack) {
                 Stack stack = (Stack) actor;
@@ -76,11 +70,11 @@ public class Board extends Table {
                     }
                     final Stack nextCell = (Stack) cells[roll].getActor();
                     pawn.remove();
-                    pawn.setPosition(stack.getX(),stack.getY());
+                    pawn.setPosition(stack.getX(), stack.getY());
                     addActor(pawn);
 
                     pawn.addAction(Actions.sequence(
-                            Actions.moveTo(nextCell.getX(),nextCell.getY(),0.3f),
+                            Actions.moveTo(nextCell.getX(), nextCell.getY(), 0.3f),
                             Actions.run(new Runnable() {
                                 @Override
                                 public void run() {
@@ -105,7 +99,7 @@ public class Board extends Table {
                 stack.add(t);
 //                pawns.add(t);
             }
-        }*/
+        }
 
     }
 
@@ -173,172 +167,168 @@ public class Board extends Table {
 
         return table;
     }
-    public void initLadder(){
+
+    public void initLadder() {
+        ladderInitialized = true;
         Random random = new Random();
-        int x = random.nextInt(5-3)+3;
-        Array<Table> a = createLadder(1);
-        for (Table y : a){
+        int x = random.nextInt(2) + 3;
+        Array<Table> a = createLadder(x);
+        for (Table y : a) {
             table.addActor(y);
         }
+
     }
 
     private Array<Table> createLadder(int laddersNumber) {
-        Array <Table> a= new Array<>(laddersNumber);
-       getStartAndEndOfLadders(laddersNumber);
+        Array<Table> a = new Array<>(laddersNumber);
+        getStartAndEndOfLadders(laddersNumber);
 
-        for(int i=0;i<laddersNumber;i++) {
-            Table ladder = new Table();
-            ladder.setOrigin(Align.center);
-            ladder.setTransform(true);
+        for (int i = 0; i < laddersNumber; i++) {
+            System.out.print("ladder index => " + ladderStartPos[i] + "->" + ladderEndPos[i]);
 
             Stack stack = (Stack) cells[ladderStartPos[i]].getActor();
-            Vector2 ladderPosition=new Vector2();
-            stack.localToActorCoordinates(table,ladderPosition);
-            Vector2 startCoordinates= new Vector2();
-            startCoordinates.set(ladderPosition.x,ladderPosition.y);
-            ladderPosition.set(0,0);
+            Vector2 ladderStartPosition = new Vector2();
+            stack.localToActorCoordinates(table, ladderStartPosition);
+
+            Vector2 ladderEndPosition = new Vector2();
+
             Stack endStack = (Stack) cells[ladderEndPos[i]].getActor();
-            endStack.localToActorCoordinates(table,ladderPosition);
+            endStack.localToActorCoordinates(table, ladderEndPosition);
 
-            Vector2 endCoordinates= new Vector2();
-            endCoordinates.set(ladderPosition.x,ladderPosition.y);
+            Vector2 midPoint = getMidPoint(ladderStartPosition.x + cells[0].getMinWidth() / 2f, ladderStartPosition.y + cells[0].getMinHeight() / 2f
+                    , ladderEndPosition.x + cells[0].getMinWidth() / 2f, ladderEndPosition.y + cells[0].getMinHeight() / 2f);
 
-            double distanceOFStartAndEnd=calculateDistanceBetweenPoints(startCoordinates.x,startCoordinates.y
-                    ,endCoordinates.x,endCoordinates.y);
+            float ladderHeight = ladderEndPosition.dst(ladderStartPosition);
 
-            Vector2 midPoint= getMidPoint(startCoordinates.x,startCoordinates.y
-                    ,endCoordinates.x,endCoordinates.y);
-            ladder.add(drawLadder(distanceOFStartAndEnd));
+            Ladders ladders = new Ladders(ladderHeight);
 
-            ladder.setPosition(startCoordinates.x,startCoordinates.y);
-//
-//            ladder.rotateBy((float) Math.toDegrees(Math.atan2(endCoordinates.y-startCoordinates.y
-//                    ,endCoordinates.x-startCoordinates.x)));
+            ladders.setPosition(midPoint.x, midPoint.y, Align.center);
 
-            a.add(ladder);
+
+            double theta = Math.atan2(ladderStartPosition.y - ladderEndPosition.y, ladderStartPosition.x - ladderEndPosition.x);
+            theta += Math.PI / 2.0;
+            double angle = Math.toDegrees(theta);//radian to degree
+            if (angle < 0) {
+                angle += 360;
+            }
+            ladders.rotateBy((float) angle);
+            a.add(ladders);
         }
         return a;
     }
-    private void getStartAndEndOfLadders(int laddersNumber){
-        Random random= new Random();
+
+    private void getStartAndEndOfLadders(int laddersNumber) {
+        Random random = new Random();
         ladderStartPos = new int[laddersNumber];
         ladderEndPos = new int[laddersNumber];
 
-        for(int i=0;i<laddersNumber;i++) {
-            if(!(i==0)) {
-                ladderStartPos[i]= random.nextInt(59 - 3) + 3;
-                ladderEndPos[i]= random.nextInt(97 - 69) + 69;
-
-                for (int j = 0; j < i; j++) {
-
-                    if(ladderStartPos[i]/10== ladderStartPos[j]/10 ||
-                            ladderEndPos[i]/10== ladderEndPos[j]/10) {
-
-                        ladderStartPos[i] = random.nextInt(59 - 3) + 3;
-                        ladderEndPos[i]= random.nextInt(97 - 69) + 69;
-                        j--;
-                    }
-                }
+        for (int i = 0; i < laddersNumber; i++) {
+            if(i==0){
+                ladderStartPos[i] = random.nextInt(56) + 3;
+                ladderEndPos[i] = random.nextInt(28) + 69;
             }
-            else {
-                ladderStartPos[i] = random.nextInt(59 - 3) + 3;
-                ladderEndPos[i]= random.nextInt(97 - 69) + 69;
-
+            else{
+                ladderStartPos[i]=getNewRandomNoForStart();
+                ladderEndPos[i]=getNewRandomNoForEnd();
             }
+//
+            cellsOccupied.add(ladderStartPos[i]);
+            cellsOccupied.add(ladderEndPos[i]);
         }
 
     }
-        public Table drawLadder(double height){
-        Table ladder= new Table();
-        ladder.setOrigin(Align.center);
-        Image head= new Image(new Texture("SnakeAndLadder/Stairs-top.png"));
-        Table headTable= new Table();
-        headTable.add(head).width(cells[0].getMinWidth()*0.8f).height(cells[0].getMinHeight()*0.2f);
-        ladder.add(headTable).row();
-
-
-        height = height-(2*cells[0].getMinHeight()*0.2f);
-        if(height<1){
-            height=cells[0].getMinHeight()*0.5f;
+    public int getNewRandomNoForStart(){
+        Random random= new Random();
+        int x= random.nextInt(56) + 3;
+        if(cellsOccupied.contains(x,true))
+            return getNewRandomNoForStart();
+        else{
+            return x;
         }
-
-        long NumOfMidRequired= Math.round(height/(cells[0].getMinHeight()*0.5f));
-        for (int i= 0;i<NumOfMidRequired;i++){
-            Image medial = new Image(new Texture("SnakeAndLadder/Stairs.png"));
-            Table medialTable= new Table();
-            medialTable.add(medial).width(cells[0].getMinWidth()*0.8f).height(cells[0].getMinHeight()*0.5f);
-            ladder.add(medialTable).expandY().fillY().row();
-
-        }
-
-
-        TextureRegion textureRegion = new TextureRegion(new Texture("SnakeAndLadder/Stairs-top.png"));
-        textureRegion.flip(false, true);
-
-        Image bottom = new Image(textureRegion);
-        Table bottomTable= new Table();
-        bottomTable.add(bottom).width(cells[0].getMinWidth()*0.8f).height(cells[0].getMinHeight()*0.2f);
-        ladder.add(bottomTable).expandY().fillY();
-//Ladder.debugAll();
-    return ladder;
     }
-    public void initSnake(){
+    public int getNewRandomNoForEnd(){
+        Random random= new Random();
+        int x= random.nextInt(28) + 69;
+        if(cellsOccupied.contains(x,true))
+            return getNewRandomNoForEnd();
+        else{
+            return x;
+        }
+    }
+
+    public void initSnake() {
+        snakeInitialized = true;
         Random random = new Random();
-        int x = random.nextInt(5-3)+3;
-        Array<Image> a=createSnake(x);
-        for (Image y : a){
+        int x = random.nextInt(5 - 3) + 3;
+        Array<Table> a = createSnake(x);
+        for (Table y : a) {
             table.addActor(y);
         }
     }
-    private Array<Image> createSnake(int snakesNumber) {
-        Array <Image> a= new Array<>(snakesNumber);
-        Random random= new Random();
 
-        int cellPositionsOfSnake[] = new int[snakesNumber];
-        for(int i=0;i<snakesNumber;i++) {
-            if(!(i==0)) {
-                cellPositionsOfSnake[i]= random.nextInt(69 - 3) + 3;
-                for (int j = 0; j < i; j++) {
+    private Array<Table> createSnake(int snakesNumber) {
+        Array<Table> a = new Array<>(snakesNumber);
+        getStartAndEndOfSnakes(snakesNumber);
 
-                    if(cellPositionsOfSnake[i]/10==cellPositionsOfSnake[j]/10 ) {
-                        cellPositionsOfSnake[i] = random.nextInt(69 - 3) + 3;
-                        j--;
+        for (int i = 0; i < snakesNumber; i++) {
+            System.out.print("Snake index => " + snakeStartPos[i] + "->" + snakeEndPos[i]);
 
-                    }
-                }
+            Stack stack = (Stack) cells[snakeStartPos[i]].getActor();
+            Vector2 snakeStartPosition = new Vector2();
+            stack.localToActorCoordinates(table, snakeStartPosition);
+
+            Vector2 snakeEndPosition = new Vector2();
+
+            Stack endStack = (Stack) cells[snakeEndPos[i]].getActor();
+            endStack.localToActorCoordinates(table, snakeEndPosition);
+
+            Vector2 midPoint = getMidPoint(snakeStartPosition.x + cells[0].getMinWidth() / 2f, snakeStartPosition.y + cells[0].getMinHeight() / 2f
+                    , snakeEndPosition.x + cells[0].getMinWidth() / 2f, snakeEndPosition.y + cells[0].getMinHeight() / 2f);
+
+            float snakeHeight = snakeEndPosition.dst(snakeStartPosition);
+
+            Snakes snakes = new Snakes(snakeHeight);
+
+            snakes.setPosition(midPoint.x, midPoint.y, Align.center);
+
+
+            double theta = Math.atan2(snakeStartPosition.y - snakeEndPosition.y, snakeStartPosition.x - snakeEndPosition.x);
+            theta += Math.PI / 2.0;
+            double angle = Math.toDegrees(theta);//radian to degree
+            if (angle < 0) {
+                angle += 360;
             }
-            else {
-                cellPositionsOfSnake[i] = random.nextInt(69 - 3) + 3;
-            }
-        }
-        Vector2[] vector2s= new Vector2[snakesNumber];
-        for(int i=0;i<snakesNumber;i++) {
-            Stack stack = (Stack) cells[cellPositionsOfSnake[i]].getActor();
-            vector2s[i]=new Vector2(stack.getX(),stack.getY()+cells[0].getMinWidth()/2f);
-        }
-
-        for(int i=0;i<snakesNumber;i++) {
-            Image Snake = new Image(new Texture("Snake.png"));
-            Snake.setSize(GameInfo.WIDTH * 0.1f, GameInfo.HEIGHT * 0.24f);
-            if(-vector2s[i].y>getX()+getHeight()-Snake.getHeight()){
-                vector2s[i].y=vector2s[i].y+Snake.getHeight();
-            }
-            Snake.setPosition(vector2s[i].x, vector2s[i].y);
-            Snake.setAlign(Align.center);
-            int x= random.nextInt(45 -(-45))+(-45);
-            Snake.setRotation(x);
-
-            a.add(Snake);
+            snakes.rotateBy((float) angle);
+            a.add(snakes);
         }
         return a;
     }
-    private double  calculateDistanceBetweenPoints(double  x1,double y1, double x2, double y2){
-        return Math.sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
+
+    private void getStartAndEndOfSnakes(int snakesNumber) {
+        Random random = new Random();
+        snakeStartPos = new int[snakesNumber];
+        snakeEndPos = new int[snakesNumber];
+
+        for (int i = 0; i < snakesNumber; i++) {
+            if(i==0){
+                snakeStartPos[i] = random.nextInt(56) + 3;
+                snakeEndPos[i] = random.nextInt(28) + 69;
+            }
+            else{
+                snakeStartPos[i]=getNewRandomNoForStart();
+                snakeEndPos[i]=getNewRandomNoForEnd();
+            }
+//
+            cellsOccupied.add(snakeStartPos[i]);
+            cellsOccupied.add(snakeEndPos[i]);
+        }
     }
-    private Vector2 getMidPoint(float x1, float y1, float x2, float y2){
-        Vector2 vector2= new Vector2();
-        vector2.x= (x1+x2)/2;
-        vector2.y=(y1+y2)/2;
+
+
+    private Vector2 getMidPoint(float x1, float y1, float x2, float y2) {
+        Vector2 vector2 = new Vector2();
+        vector2.x = (x1 + x2) / 2;
+        vector2.y = (y1 + y2) / 2;
         return vector2;
     }
 
@@ -356,12 +346,18 @@ public class Board extends Table {
         super.draw(batch, parentAlpha);
 
 
-        }
+    }
 
     public Cell[] getPosition() {
         return cells;
     }
 
 
+    public boolean isLadderInitialized() {
+        return ladderInitialized;
+    }
+    public boolean isSnakeInitialized() {
+        return snakeInitialized;
+    }
 }
 

@@ -51,8 +51,7 @@ public class Huds extends Table {
                 if (numberOfBluePawnLeft >0) {
                     board.movePawnBy(1, pawnBlueArray.get(numberOfBluePawnLeft -1));
 
-
-//                    pawnBlueStack.removeActor(pawnBlueArray.get(numberOfBluePawnLeft -1));
+                    pawnBlueStack.removeActor(pawnBlueArray.get(numberOfBluePawnLeft -1));
 //                    pawnBlueStack.removeActorAt(numberOfBluePawnLeft -1,false);
 
                     numberOfBluePawnLeft--;
@@ -60,20 +59,20 @@ public class Huds extends Table {
             }
         });
 
-//        numberOfGreenPawnLeft =3;
-//        pawnGreenStack.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                if (numberOfGreenPawnLeft >0) {
-//
-//                    board.movePawnBy(1, pawnGreenArray.get(numberOfGreenPawnLeft -1));
-//                    pawnGreenStack.removeActor(pawnGreenArray.get(numberOfGreenPawnLeft -1));
-////                    pawnGreenStack.removeActorAt(numberOfGreenPawnLeft -1,false);
-//                    numberOfGreenPawnLeft--;
-//                }
-//
-//            }
-//        });
+        numberOfGreenPawnLeft =3;
+        pawnGreenStack.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (numberOfGreenPawnLeft >0) {
+
+                    board.movePawnBy(1, pawnGreenArray.get(numberOfGreenPawnLeft -1));
+                    pawnGreenStack.removeActor(pawnGreenArray.get(numberOfGreenPawnLeft -1));
+//                    pawnGreenStack.removeActorAt(numberOfGreenPawnLeft -1,false);
+                    numberOfGreenPawnLeft--;
+                }
+
+            }
+        });
 //        addListenerToSpecificPawn();
     }
 

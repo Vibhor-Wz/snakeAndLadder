@@ -55,7 +55,6 @@ public class GameMain extends Game {
 		stage.addActor(container);
 
 		Gdx.input.setInputProcessor(stage);
-		board.initLadder();
 
 //		Gdx.app.postRunnable(new Runnable() {
 //			@Override
@@ -90,6 +89,11 @@ public class GameMain extends Game {
 
 		stage.act();
 		stage.draw();
+		if(!board.isLadderInitialized())
+			board.initLadder();
+		if (!board.isSnakeInitialized())
+			board.initSnake();
+
 
 //		if(Gdx.input.justTouched()){
 //
