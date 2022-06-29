@@ -1,5 +1,8 @@
 package com.project.snakeandladder;
 
+import static com.project.snakeandladder.PawnAndPlayerType.BLUE;
+import static com.project.snakeandladder.PawnAndPlayerType.GREEN;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -10,27 +13,43 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.project.snakeandladder.interfaces.PlayerInterface;
 
 import Helpers.GameInfo;
 import Helpers.Huds;
 
-public class GameMain extends Game {
+public class GameMain extends Game{
 	SpriteBatch batch;
 
 	private Stage stage;
 	private Board board;
 	int r= 0;
+	private Players bluePawnPlayer;
+	private Players greenPawnPlayer;
+	private Huds huds;
+	Boolean player1Turn;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		stage= new Stage(new FitViewport(GameInfo.WIDTH,GameInfo.HEIGHT));
+
+
+		createScreen();
+		bluePawnPlayer = new Players("Vibhor",board,BLUE);
+		greenPawnPlayer = new Players("Jai",board,GREEN);
+
+		Gdx.input.setInputProcessor(stage);
+
+	}
+	void createScreen(){
+		stage= new Stage();
 		final Table container = new Table();
 		container.setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
 
@@ -39,48 +58,21 @@ public class GameMain extends Game {
 
 		Table hudsContainer = new Table();
 		hudsContainer.setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
-		final Table boardTable= new Table();
-		boardTable.top().padTop(GameInfo.HEIGHT * 0.1f);
 		board = new Board();
-		boardTable.add(board).expandX().fillX();
 
-		Huds huds= new Huds();
+
+		huds= new Huds(board,bluePawnPlayer,greenPawnPlayer);
+
+		board.pack();
+		board.setPosition(GameInfo.WIDTH/2,GameInfo.HEIGHT*0.6f, Align.center);
+		container.addActor(board);
 
 		hudsContainer.add(huds).top().expandX().fillX().expandY().fillY();
 		stack.add(hudsContainer);
 		container.add(stack).expand().fill();
-		stack.add(boardTable);
-		boardTable.pack();
+
 
 		stage.addActor(container);
-
-		Gdx.input.setInputProcessor(stage);
-
-//		Gdx.app.postRunnable(new Runnable() {
-//			@Override
-//			public void run() {
-//				container.invalidate();
-//
-////				board.initSnake();
-//			}
-//		});
-
-//		Timer.schedule(new Timer.Task() {
-//			@Override
-//			public void run() {
-//				Gdx.app.postRunnable(new Runnable() {
-//					@Override
-//					public void run() {
-//						board.initLadder();
-//					}
-//				});
-//			}
-//		},2.0f);
-
-
-
-
-
 	}
 
 	@Override
@@ -94,14 +86,6 @@ public class GameMain extends Game {
 		if (!board.isSnakeInitialized())
 			board.initSnake();
 
-
-//		if(Gdx.input.justTouched()){
-//
-//				board.movePawnBy(r);
-//				r++;
-//
-//
-//		}
 
 	}
 	

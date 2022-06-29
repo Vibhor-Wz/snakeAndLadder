@@ -1,6 +1,7 @@
 package com.project.snakeandladder;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -17,15 +18,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.project.snakeandladder.interfaces.PlayerInterface;
+import com.sun.tools.javac.util.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 
 import Helpers.Font;
 import Helpers.GameInfo;
 
-public class Board extends Table {
+public class Board extends Table implements PlayerInterface {
 
     Table table;
     private Cell[] cells;
@@ -33,74 +36,59 @@ public class Board extends Table {
     int ladderEndPos[];
     int snakeStartPos[];
     int snakeEndPos[];
-    Array<Integer> cellsOccupied= new Array<>();
+    Array<Integer> ladderStartCellIndexes;
+    Array<Integer> snakeBiteCellIndexes;
     private boolean ladderInitialized = false;
     private boolean snakeInitialized = false;
+    private int noOfSnakes;
+    private int noOfLadders;
+
+
 
     public Board() {
         cells = new Cell[100];
-
+        setWidth(GameInfo.WIDTH);
+        snakeBiteCellIndexes = new Array<>();
+        ladderStartCellIndexes = new Array<>();
         setName("SnakeAndLadderBoard");
         Image bg = new Image(new Texture("bg.png"));
         bg.setColor(Color.valueOf("#fafca8"));
 
-        stack(bg, createBoard()).expandX().fillX().height(GameInfo.HEIGHT * 0.61f);
+        stack(bg, createBoard()).width(GameInfo.WIDTH).height(GameInfo.HEIGHT * 0.61f);
+        getRandomValuesForSnakeStart();
+        getRandomValuesForLadderStart();
         pack();
-//        initLadder();
 
     }
 
-    public void movePawnBy(int roll, Table t) {
+    public void movePawnBy(int targetCellNo, final Table pawn) {
 
+        Cell targetCell = cells[targetCellNo - 1];
 
-        if (roll > 0) {
-            Actor actor = cells[roll - 1].getActor();
-            if (actor instanceof Stack) {
-                Stack stack = (Stack) actor;
-                if (stack.getChildren().size >= 2) {
-                    final Actor pawn;
-                    if (stack.getChildren().size == 2) {
-//                        Image pawnImg = new Image(new Texture("blue.png"));
-//                        Table t = new Table();
-//                        t.add(pawnImg).height(cells[0].getMinHeight()*0.8f).width(cells[0].getMinWidth()*0.55f);
-                        pawn = t;
-
-                    } else {
-                        pawn = stack.getChild(2);
-                    }
-                    final Stack nextCell = (Stack) cells[roll].getActor();
-                    pawn.remove();
-                    pawn.setPosition(stack.getX(), stack.getY());
-                    addActor(pawn);
-
-                    pawn.addAction(Actions.sequence(
-                            Actions.moveTo(nextCell.getX(), nextCell.getY(), 0.3f),
-                            Actions.run(new Runnable() {
-                                @Override
-                                public void run() {
-                                    nextCell.add(pawn);
-                                }
-                            })
-                    ));
-
-                }
-            } else {
-
-            }
-        } else {
-            Actor actor = cells[roll].getActor();
-            if (actor instanceof Stack) {
-                Stack stack = (Stack) actor;
-
-//                Image pawnImg = new Image(new Texture("blue.png"));
-//                Table t = new Table();
-//                t.add(pawnImg).height(cells[0].getMinHeight()*0.8f).width(cells[0].getMinWidth()*0.55f);
-
-                stack.add(t);
-//                pawns.add(t);
-            }
+        Stack stack = null;
+        if (targetCell.getActor() != null) {
+            stack = (Stack) targetCell.getActor();
+            pawn.setPosition(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY());
         }
+//        else {
+//            stack = new Stack();
+//            targetCell.setActor(stack);
+//        }
+//        Vector2 tmp = new Vector2();
+//        stack.localToActorCoordinates(this,tmp);
 
+        pawn.addAction(Actions.sequence(
+                Actions.moveTo(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY()),
+                Actions.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        addActor(pawn);
+//                        stack.add(pawn);
+                    }
+                })
+        ));
+
+//        addActor(pawn);
     }
 
 
@@ -136,14 +124,14 @@ public class Board extends Table {
                     if (j % 2 == 0) {
                         Image cellImgEven = new Image(new Texture("cell.png"));
                         cellImgEven.setColor(Color.valueOf("#dff964"));//odd
-                        cells[t - 1] = table.stack(cellImgEven, numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
+                        cells[t - 1] = table.stack( cellImgEven,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
 
                         numLbl.setName(String.valueOf(t));
 
                     } else {
                         Image cellImgOdd = new Image(new Texture("cell.png"));
                         cellImgOdd.setColor(Color.valueOf("#b5e72c"));//odd
-                        cells[t - 1] = table.stack(cellImgOdd, numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
+                        cells[t - 1] = table.stack( cellImgOdd,numLbl).width(GameInfo.WIDTH * 0.093f).height(GameInfo.HEIGHT * 0.056f).pad(GameInfo.WIDTH * 0.003f);
                         numLbl.setName(String.valueOf(t));
                     }
                 }
@@ -168,11 +156,23 @@ public class Board extends Table {
         return table;
     }
 
+    public void getRandomValuesForLadderStart() {
+        Random random = new Random();
+        noOfLadders = random.nextInt(3) + 3;
+        ladderStartPos = new int[noOfLadders];
+        ladderEndPos = new int[noOfLadders];
+        for (int i = 0; i < noOfLadders; i++) {
+            int y = random.nextInt(9);
+            if (!ladderStartCellIndexes.contains(y, true))
+                ladderStartCellIndexes.add(y);
+            else
+                i--;
+        }
+    }
+
     public void initLadder() {
         ladderInitialized = true;
-        Random random = new Random();
-        int x = random.nextInt(2) + 3;
-        Array<Table> a = createLadder(x);
+        Array<Table> a = createLadder(noOfLadders);
         for (Table y : a) {
             table.addActor(y);
         }
@@ -181,8 +181,8 @@ public class Board extends Table {
 
     private Array<Table> createLadder(int laddersNumber) {
         Array<Table> a = new Array<>(laddersNumber);
-        getStartAndEndOfLadders(laddersNumber);
-
+//        getStartAndEndOfLadders(laddersNumber);
+        ladderPosition();
         for (int i = 0; i < laddersNumber; i++) {
             System.out.print("ladder index => " + ladderStartPos[i] + "->" + ladderEndPos[i]);
 
@@ -217,50 +217,43 @@ public class Board extends Table {
         return a;
     }
 
-    private void getStartAndEndOfLadders(int laddersNumber) {
+    private void ladderPosition() {
+        Ladders ladders = new Ladders();
+        Set<Integer> ladderStart = ladders.ladder.keySet();
+
+        Iterator<Integer> iterator = ladderStart.iterator();
+
+
+        int j = 0;
+        while (iterator.hasNext() && j < ladderStartCellIndexes.size) {
+
+            ladderStartPos[j] = (int) (ladders.ladder.get(ladderStartCellIndexes.get(j)).x) - 1;
+            ladderEndPos[j] = (int) (ladders.ladder.get(ladderStartCellIndexes.get(j)).y) - 1;
+            j++;
+
+
+        }
+    }
+
+
+    public void getRandomValuesForSnakeStart() {
+
         Random random = new Random();
-        ladderStartPos = new int[laddersNumber];
-        ladderEndPos = new int[laddersNumber];
-
-        for (int i = 0; i < laddersNumber; i++) {
-            if(i==0){
-                ladderStartPos[i] = random.nextInt(56) + 3;
-                ladderEndPos[i] = random.nextInt(28) + 69;
-            }
-            else{
-                ladderStartPos[i]=getNewRandomNoForStart();
-                ladderEndPos[i]=getNewRandomNoForEnd();
-            }
-//
-            cellsOccupied.add(ladderStartPos[i]);
-            cellsOccupied.add(ladderEndPos[i]);
-        }
-
-    }
-    public int getNewRandomNoForStart(){
-        Random random= new Random();
-        int x= random.nextInt(56) + 3;
-        if(cellsOccupied.contains(x,true))
-            return getNewRandomNoForStart();
-        else{
-            return x;
-        }
-    }
-    public int getNewRandomNoForEnd(){
-        Random random= new Random();
-        int x= random.nextInt(28) + 69;
-        if(cellsOccupied.contains(x,true))
-            return getNewRandomNoForEnd();
-        else{
-            return x;
+        noOfSnakes = random.nextInt(3) + 3;
+        snakeStartPos = new int[noOfSnakes];
+        snakeEndPos = new int[noOfSnakes];
+        for (int i = 0; i < noOfSnakes; i++) {
+            int y = random.nextInt(9);
+            if (!snakeBiteCellIndexes.contains(y, true))
+                snakeBiteCellIndexes.add(y);
+            else
+                i--;
         }
     }
 
     public void initSnake() {
         snakeInitialized = true;
-        Random random = new Random();
-        int x = random.nextInt(5 - 3) + 3;
-        Array<Table> a = createSnake(x);
+        Array<Table> a = createSnake(noOfSnakes);
         for (Table y : a) {
             table.addActor(y);
         }
@@ -268,10 +261,10 @@ public class Board extends Table {
 
     private Array<Table> createSnake(int snakesNumber) {
         Array<Table> a = new Array<>(snakesNumber);
-        getStartAndEndOfSnakes(snakesNumber);
+
+        snakePosition();
 
         for (int i = 0; i < snakesNumber; i++) {
-            System.out.print("Snake index => " + snakeStartPos[i] + "->" + snakeEndPos[i]);
 
             Stack stack = (Stack) cells[snakeStartPos[i]].getActor();
             Vector2 snakeStartPosition = new Vector2();
@@ -287,9 +280,9 @@ public class Board extends Table {
 
             float snakeHeight = snakeEndPosition.dst(snakeStartPosition);
 
-            Snakes snakes = new Snakes(snakeHeight);
+            Snakes snake = new Snakes(snakeHeight);
 
-            snakes.setPosition(midPoint.x, midPoint.y, Align.center);
+            snake.setPosition(midPoint.x, midPoint.y, Align.center);
 
 
             double theta = Math.atan2(snakeStartPosition.y - snakeEndPosition.y, snakeStartPosition.x - snakeEndPosition.x);
@@ -298,30 +291,29 @@ public class Board extends Table {
             if (angle < 0) {
                 angle += 360;
             }
-            snakes.rotateBy((float) angle);
-            a.add(snakes);
+            snake.rotateBy((float) angle);
+            a.add(snake);
         }
         return a;
     }
 
-    private void getStartAndEndOfSnakes(int snakesNumber) {
-        Random random = new Random();
-        snakeStartPos = new int[snakesNumber];
-        snakeEndPos = new int[snakesNumber];
+    private void snakePosition() {
+        Snakes snakes = new Snakes();
+        Set<Integer> snakebiteCells = snakes.snake.keySet();
 
-        for (int i = 0; i < snakesNumber; i++) {
-            if(i==0){
-                snakeStartPos[i] = random.nextInt(56) + 3;
-                snakeEndPos[i] = random.nextInt(28) + 69;
-            }
-            else{
-                snakeStartPos[i]=getNewRandomNoForStart();
-                snakeEndPos[i]=getNewRandomNoForEnd();
-            }
-//
-            cellsOccupied.add(snakeStartPos[i]);
-            cellsOccupied.add(snakeEndPos[i]);
+        Iterator<Integer> iterator = snakebiteCells.iterator();
+
+
+        int j = 0;
+        while (iterator.hasNext() && j < snakeBiteCellIndexes.size) {
+
+            snakeEndPos[j] = (int) (snakes.snake.get(snakeBiteCellIndexes.get(j)).x) - 1;
+            snakeStartPos[j] = (int) (snakes.snake.get(snakeBiteCellIndexes.get(j)).y) - 1;
+            j++;
+
+
         }
+
     }
 
 
@@ -356,8 +348,14 @@ public class Board extends Table {
     public boolean isLadderInitialized() {
         return ladderInitialized;
     }
+
     public boolean isSnakeInitialized() {
         return snakeInitialized;
+    }
+
+    @Override
+    public void getData(String value,String playerName) {
+
     }
 }
 
