@@ -14,6 +14,7 @@ public class Pawns {
     Table pawn;
 
     public Pawns(PawnAndPlayerType pawnType){
+        pawnImgTbl= new Table();
         Image pawnImg = new Image(new Texture(pawnType+".png"));
         pawnImgTbl.add(pawnImg).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
         pawnImgTbl.align(Align.center);

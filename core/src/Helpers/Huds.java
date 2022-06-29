@@ -225,6 +225,7 @@ public class Huds extends Table {
         DistanceFieldFont font = new Font(Gdx.files.internal("Fonts/MyFont.fnt"),
                 new TextureRegion(texture), size);
         return font;
+
     }
     private Label.LabelStyle getLabelStyle(Color color, float fontSize){
         Label.LabelStyle style= new Label.LabelStyle();
