@@ -24,9 +24,11 @@ public class GamePlay implements Screen {
     private Players player2;
     public GamePlay(GameMain game, Stage stage) {
         this.game=game;
+
         board = new Board();
-        this.player1 = new Players("Vibhor",board,BLUE);;
-        this.player2 = new Players("Jai",board,GREEN);;
+        this.player1 = new Players("Vibhor",board,BLUE);
+        this.player2 = new Players("Jai",board,GREEN);
+
 
         final Table container = new Table();
         container.setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
@@ -39,7 +41,7 @@ public class GamePlay implements Screen {
 
 
 
-        huds= new Huds(board, player1, player2);
+        huds= new Huds(board, player1, player2,game.getPlayer1Turn());
 
         board.pack();
         board.setPosition(GameInfo.WIDTH/2,GameInfo.HEIGHT*0.6f, Align.center);

@@ -20,20 +20,17 @@ public class GameMain extends Game{
 	SpriteBatch batch;
 
 	private Stage stage;
-	private Board board;
-	int r= 0;
 
-	private Huds huds;
 	Boolean player1Turn;
-	private Players player1;
-	private Players player2;
+
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		stage= new Stage();
-		setScreen(new GamePlay(this,stage));
 		player1Turn=true;
+		setScreen(new GamePlay(this,stage));
+
 
 		Gdx.input.setInputProcessor(stage);
 
@@ -52,4 +49,13 @@ public class GameMain extends Game{
 		stage.dispose();
 
 	}
+
+	public Boolean getPlayer1Turn() {
+		return player1Turn;
+	}
+
+	public void setPlayer1Turn(Boolean player1Turn) {
+		this.player1Turn = player1Turn;
+	}
+
 }

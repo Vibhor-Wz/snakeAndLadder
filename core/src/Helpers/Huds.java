@@ -8,13 +8,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.project.snakeandladder.Board;
 import com.project.snakeandladder.PawnAndPlayerType;
@@ -24,19 +22,19 @@ public class Huds extends Table {
     private Label numberOFMovesLeft;
     private Label movePawnLbl;
     private Label movesLeftLbl;
-    private int numberOfBluePawnLeft;
-    private int numberOfGreenPawnLeft;
     private Board board;
     private Table pawnBlueTbl;
     private Table pawnGreenTbl;
-    private Label diceRoll;
-    private boolean isPawnOnTheBoard;
+    public static Label diceRollPlayer1;
+    public static Label diceRollPlayer2;
     private Players bluePawnPlayer;
     private Players greenPawnPlayer;
+    private Boolean player1Turn;
+    public static Label scorePlayer1;
+    public static Label scorePlayer2;
 
-
-    public Huds(Board board,Players bluePawnPlayer,Players greenPawnPlayer){
-
+    public Huds(Board board,Players bluePawnPlayer,Players greenPawnPlayer, Boolean player1Turn){
+        this.player1Turn=player1Turn;
         this.bluePawnPlayer = bluePawnPlayer;
         this.greenPawnPlayer =greenPawnPlayer;
         setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
@@ -52,53 +50,17 @@ public class Huds extends Table {
         add(moveLeftTbl).top().expandX().fillX().row();
         add(createBottom()).bottom().expand().fill();
 
-
-//        addListenersToPawns();
-
     }
-//    private void addListenersToPawns(){
-//        numberOfBluePawnLeft =3;
-//        pawnBlueTbl.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                if (numberOfBluePawnLeft >0) {
-//                    Table t = (Table) pawnBlueTbl.getChild(numberOfBluePawnLeft -1);
-//                    t.align(Align.center);
-//                    board.movePawnTo(1, t);
-//
-//                    numberOfBluePawnLeft--;
-//
-//
-//                }
-//            }
-//        });
-//
-//        numberOfGreenPawnLeft =3;
-//        pawnGreenTbl.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                if (numberOfGreenPawnLeft >0) {
-//                    Table p=(Table)pawnGreenTbl.getChild(numberOfGreenPawnLeft -1);
-//                    p.align(Align.center);
-//                    board.movePawnTo(1, p);
-//
-//                    numberOfGreenPawnLeft--;
-//                }
-//
-//            }
-//        });
-//
-//    }
 
 
     private Table createBottom(){
         Table mainTable= new Table();
         mainTable.bottom();
 
-        mainTable.add(getDiceWithRollTbl(BLUE,true)).expandX().fillX();
-        mainTable.add(getDiceWithRollTbl(GREEN,false)).expandX().fillX().row();
-        mainTable.add(getScoreBoardOfPlayers(bluePawnPlayer.getName(),true)).expandX().fillX();
-        mainTable.add(getScoreBoardOfPlayers(greenPawnPlayer.getName(),false)).expandX().fillX();
+        mainTable.add(getDiceWithRollTbl(BLUE,player1Turn)).expandX().fillX();
+        mainTable.add(getDiceWithRollTbl(GREEN,(!player1Turn))).expandX().fillX().row();
+        mainTable.add(getScoreBoardOfPlayer1(bluePawnPlayer.getName())).expandX().fillX();
+        mainTable.add(getScoreBoardOfPlayer2(greenPawnPlayer.getName())).expandX().fillX();
         return mainTable;
     }
     private Table getDiceWithRollTbl(PawnAndPlayerType pawnColor, boolean playerTurn){
@@ -145,6 +107,7 @@ public class Huds extends Table {
                 pawnBlueTbl.add(bluePawnPlayer.pawns[2].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
 
                 table.add(pawnBlueTbl).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
+
             }
             else {
 
@@ -159,35 +122,40 @@ public class Huds extends Table {
             }
 
 
-        diceRoll= new Label("5",getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.03f));
-        table.add(diceRoll);
+        diceRollPlayer1 = new Label("5",getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.03f));
+        table.add(diceRollPlayer1);
 
         return table;
     }
 
-
-    private Table getScoreBoardOfPlayers(String playerName, boolean player1){
+    private Table getScoreBoardOfPlayer1(String playerName){
         Table table= new Table();
 
-       table.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
-       if(player1){
-           table.add(getScoreDetailsOfPlayer1()).top().expandY().fill();
-       }
-       else {
-           table.add(getScoreDetailsOfPlayer2()).top().expandY().fill();
-       }
+        table.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
+
+            table.add(getScoreDetailsOfPlayer1()).top().expandY().fill();
+
+        return table;
+    }
+    private Table getScoreBoardOfPlayer2(String playerName){
+        Table table= new Table();
+
+        table.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
+
+        table.add(getScoreDetailsOfPlayer2()).top().expandY().fill();
 
         return table;
     }
     private Table getScoreDetailsOfPlayer1(){
         Table table = new Table();
         table.top();
-        Table infoIcon= new Table();
+        Table infoPlayer1= new Table();
         Image infoImg= new Image(new Texture("info.png"));
-        infoIcon.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
+        infoPlayer1.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
 
-        table.add(infoIcon).row();
-        Label scorePlayer1 = new Label("84",getLabelStyle(Color.SKY,GameInfo.WIDTH*0.042f));
+        table.add(infoPlayer1).row();
+
+        scorePlayer1 = new Label(String.valueOf(bluePawnPlayer.getPlayerScore()),getLabelStyle(Color.SKY,GameInfo.WIDTH*0.042f));
         table.add(scorePlayer1).row();
 
         Label scoreTxt = new Label("SCORE",getLabelStyle(Color.SKY, GameInfo.WIDTH*0.023f));
@@ -197,12 +165,13 @@ public class Huds extends Table {
     private Table getScoreDetailsOfPlayer2(){
         Table table = new Table();
         table.top();
-        Table infoIcon= new Table();
+        Table infoPlayer2= new Table();
         Image infoImg= new Image(new Texture("info.png"));
-        infoIcon.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
+        infoPlayer2.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
 
-        table.add(infoIcon).top().row();
-        Label scorePlayer2 = new Label("10",getLabelStyle(Color.GREEN,GameInfo.WIDTH*0.042f));
+        table.add(infoPlayer2).top().row();
+
+        scorePlayer2 = new Label(String.valueOf(greenPawnPlayer.getPlayerScore()),getLabelStyle(Color.GREEN,GameInfo.WIDTH*0.042f));
         table.add(scorePlayer2).row();
 
         Label scoreTxt = new Label("SCORE",getLabelStyle(Color.SKY, GameInfo.WIDTH*0.023f));
@@ -237,11 +206,4 @@ public class Huds extends Table {
         return style;
     }
 
-    public Table getPawnBlueTbl() {
-        return pawnBlueTbl;
-    }
-
-    public Table getPawnGreenTbl() {
-        return pawnGreenTbl;
-    }
 }

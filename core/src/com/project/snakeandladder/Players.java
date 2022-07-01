@@ -1,7 +1,5 @@
 package com.project.snakeandladder;
 
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -10,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+
+import Helpers.Huds;
 
 
 public class Players{
@@ -63,33 +63,63 @@ public class Players{
 
     }
     void addListenersToPawns(){
+        final Players p=this;
         pawns[0].pawn.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                Random random = new Random();
+                roll = random.nextInt(6)+1;
+                Huds.diceRollPlayer1.setText(roll);
+
                 int previousPos = pawns[0].getPosition();
                 pawns[0].updatePosition(roll);
-                    board.movePawnTo(previousPos + roll, pawns[0].pawn,previousPos,pawns[0]);
-                    updatePlayerPawn(pawns[0].pawn,previousPos + roll);
+                    board.movePawnTo(previousPos + roll, pawns[0].pawn,previousPos,pawns[0],p);
+
+                if(playerType.equals(PawnAndPlayerType.BLUE)){
+                    Huds.scorePlayer1.setText(playerScore);
+                }
+                else{
+                    Huds.scorePlayer2.setText(playerScore);
+                }
+
             }
         });
         pawns[1].pawn.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                Random random = new Random();
+                roll = random.nextInt(6)+1;
+                Huds.diceRollPlayer1.setText(roll);
                 int previousPos = pawns[1].getPosition();
                 pawns[1].updatePosition(roll);
-                board.movePawnTo(previousPos + roll, pawns[1].pawn,previousPos,pawns[1]);
-                updatePlayerPawn(pawns[1].pawn,previousPos + roll);
+                board.movePawnTo(previousPos + roll, pawns[1].pawn,previousPos,pawns[1],p);
+
+                if(playerType.equals(PawnAndPlayerType.BLUE)){
+                    Huds.scorePlayer1.setText(playerScore);
+                }
+                else{
+                    Huds.scorePlayer2.setText(playerScore);
+                }
             }
         });
         pawns[2].pawn.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                Random random = new Random();
+                roll = random.nextInt(6)+1;
+                Huds.diceRollPlayer1.setText(roll);
                 int previousPos = pawns[2].getPosition();
                 pawns[2].updatePosition(roll);
 
-                board.movePawnTo(previousPos + 1, pawns[2].pawn, previousPos,pawns[2]);
-                updatePlayerPawn(pawns[2].pawn, previousPos + roll);
+                board.movePawnTo(previousPos + 1, pawns[2].pawn, previousPos,pawns[2],p);
 
+
+                if(playerType.equals(PawnAndPlayerType.BLUE)){
+                    Huds.scorePlayer1.setText(playerScore);
+                }
+                else{
+                    Huds.scorePlayer2.setText(playerScore);
+                }
             }
         });
 
@@ -104,7 +134,7 @@ public class Players{
         return id;
     }
 
-    public void setPlayerScore() {
+    public void updatePlayerScore() {
         playerScore=0;
         for (int i: playerPawnMap.values()) {
             playerScore+=i;

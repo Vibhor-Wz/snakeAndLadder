@@ -17,14 +17,15 @@ public class Ladders extends Table {
     Board board;
     double height;
     Map<Integer, Vector2> ladder;
-    public Ladders(double height){
+    public Ladders(double height,Board board){
 
-        board= new Board();
+        this.board= board;
         this.height=height;
         drawLadder();
         setTransform(true);
     }
-    public Ladders() {
+    public Ladders(Board board) {
+        this.board=board;
         initLadder();
     }
 

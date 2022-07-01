@@ -17,16 +17,17 @@ public class Snakes extends Table {
     private Board board;
     private double height;
     Map<Integer, Vector2> snake ;
-    public Snakes(double height){
+    public Snakes(double height,Board board){
 
-        board= new Board();
+        this.board= board;
         this.height=height;
         drawSnakes();
         setTransform(true);
 
 
     }
-    public Snakes() {
+    public Snakes(Board board) {
+        this.board=board;
         initSnakes();
     }
     private void initSnakes(){
