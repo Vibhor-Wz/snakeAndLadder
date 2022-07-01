@@ -8,26 +8,36 @@ import com.badlogic.gdx.utils.Align;
 import Helpers.GameInfo;
 
 public class Pawns {
-    public Table pawnImgTbl;
+    public Table pawn;
+
+
     private int position;
     PawnAndPlayerType pawnType;
-    Table pawn;
+
+
 
     public Pawns(PawnAndPlayerType pawnType){
-        pawnImgTbl= new Table();
-        Image pawnImg = new Image(new Texture(pawnType+".png"));
-        pawnImgTbl.add(pawnImg).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
-        pawnImgTbl.align(Align.center);
+
+        pawn= new Table();
+        Image pawnImg = new Image(new Texture("SnakeAndLadder/"+pawnType+".png"));
+        pawn.add(pawnImg).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
+        pawn.align(Align.center);
         this.position= 0;
         this.pawnType = pawnType;
 
     }
+
     public void updatePosition(int diceRollNumber){
-        position+=diceRollNumber;
+
+        position += diceRollNumber;
     }
     public int getPosition() {
         return position;
     }
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
 
 
 }

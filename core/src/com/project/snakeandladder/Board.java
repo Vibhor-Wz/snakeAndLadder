@@ -21,7 +21,9 @@ import com.badlogic.gdx.utils.Array;
 import com.project.snakeandladder.interfaces.PlayerInterface;
 import com.sun.tools.javac.util.Pair;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -32,16 +34,18 @@ public class Board extends Table implements PlayerInterface {
 
     Table table;
     private Cell[] cells;
-    int ladderStartPos[];
-    int ladderEndPos[];
-    int snakeStartPos[];
-    int snakeEndPos[];
+    Array<Integer> ladderStartPos;
+    Array<Integer> ladderEndPos;
+    Array<Integer> snakeStartPos;
+    Array<Integer> snakeEndPos;
     Array<Integer> ladderStartCellIndexes;
     Array<Integer> snakeBiteCellIndexes;
     private boolean ladderInitialized = false;
     private boolean snakeInitialized = false;
     private int noOfSnakes;
     private int noOfLadders;
+    Map<Integer,Integer> ladderCoordinates;
+    Map<Integer,Integer> snakeCoordinates;
 
 
 
@@ -50,6 +54,8 @@ public class Board extends Table implements PlayerInterface {
         setWidth(GameInfo.WIDTH);
         snakeBiteCellIndexes = new Array<>();
         ladderStartCellIndexes = new Array<>();
+        ladderCoordinates= new HashMap<>();
+        snakeCoordinates= new HashMap<>();
         setName("SnakeAndLadderBoard");
         Image bg = new Image(new Texture("bg.png"));
         bg.setColor(Color.valueOf("#fafca8"));
@@ -61,34 +67,48 @@ public class Board extends Table implements PlayerInterface {
 
     }
 
-    public void movePawnBy(int targetCellNo, final Table pawn) {
+    public void movePawnTo(int targetCellNo, final Table pawn, int previousCellNo,Pawns classPawn) {
+        if(targetCellNo>previousCellNo) {
+             for (int i = previousCellNo-1; i <targetCellNo-1;i++) {
 
-        Cell targetCell = cells[targetCellNo - 1];
+                     Cell targetCell = cells[i + 1];
 
-        Stack stack = null;
-        if (targetCell.getActor() != null) {
-            stack = (Stack) targetCell.getActor();
-            pawn.setPosition(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY());
+                 Stack stack = null;
+                 if (targetCell.getActor() != null) {
+                     stack = (Stack) targetCell.getActor();
+                     pawn.setPosition(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY());
+                 }
+
+                 addActor(pawn);
+             }
         }
-//        else {
-//            stack = new Stack();
-//            targetCell.setActor(stack);
-//        }
-//        Vector2 tmp = new Vector2();
-//        stack.localToActorCoordinates(this,tmp);
 
-        pawn.addAction(Actions.sequence(
-                Actions.moveTo(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY()),
-                Actions.run(new Runnable() {
-                    @Override
-                    public void run() {
-                        addActor(pawn);
-//                        stack.add(pawn);
-                    }
-                })
-        ));
+        if(ladderStartPos.contains(targetCellNo-1,true)){
 
-//        addActor(pawn);
+            Cell targetCell =cells[ladderCoordinates.get(targetCellNo-1)];
+            Stack stack = null;
+            if (targetCell.getActor() != null) {
+                stack = (Stack) targetCell.getActor();
+                pawn.setPosition(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY());
+            }
+
+            addActor(pawn);
+            classPawn.setPosition(ladderCoordinates.get(targetCellNo-1)+1);
+
+        }
+        if(snakeEndPos.contains(targetCellNo-1,true)){
+
+            Cell targetCell =cells[snakeCoordinates.get(targetCellNo-1)];
+            Stack stack = null;
+            if (targetCell.getActor() != null) {
+                stack = (Stack) targetCell.getActor();
+                pawn.setPosition(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY());
+            }
+
+            addActor(pawn);
+            classPawn.setPosition(snakeCoordinates.get(targetCellNo-1)+1);
+        }
+
     }
 
 
@@ -159,8 +179,8 @@ public class Board extends Table implements PlayerInterface {
     public void getRandomValuesForLadderStart() {
         Random random = new Random();
         noOfLadders = random.nextInt(3) + 3;
-        ladderStartPos = new int[noOfLadders];
-        ladderEndPos = new int[noOfLadders];
+        ladderStartPos =new Array<>();
+        ladderEndPos = new Array<>();
         for (int i = 0; i < noOfLadders; i++) {
             int y = random.nextInt(9);
             if (!ladderStartCellIndexes.contains(y, true))
@@ -184,15 +204,15 @@ public class Board extends Table implements PlayerInterface {
 //        getStartAndEndOfLadders(laddersNumber);
         ladderPosition();
         for (int i = 0; i < laddersNumber; i++) {
-            System.out.print("ladder index => " + ladderStartPos[i] + "->" + ladderEndPos[i]);
+            System.out.print("ladder index => " + ladderStartPos.get(i) + "->" + ladderEndPos.get(i));
 
-            Stack stack = (Stack) cells[ladderStartPos[i]].getActor();
+            Stack stack = (Stack) cells[ladderStartPos.get(i)].getActor();
             Vector2 ladderStartPosition = new Vector2();
             stack.localToActorCoordinates(table, ladderStartPosition);
 
             Vector2 ladderEndPosition = new Vector2();
 
-            Stack endStack = (Stack) cells[ladderEndPos[i]].getActor();
+            Stack endStack = (Stack) cells[ladderEndPos.get(i)].getActor();
             endStack.localToActorCoordinates(table, ladderEndPosition);
 
             Vector2 midPoint = getMidPoint(ladderStartPosition.x + cells[0].getMinWidth() / 2f, ladderStartPosition.y + cells[0].getMinHeight() / 2f
@@ -202,6 +222,7 @@ public class Board extends Table implements PlayerInterface {
 
             Ladders ladders = new Ladders(ladderHeight);
 
+            ladderCoordinates.put(ladderStartPos.get(i),ladderEndPos.get(i));
             ladders.setPosition(midPoint.x, midPoint.y, Align.center);
 
 
@@ -227,8 +248,8 @@ public class Board extends Table implements PlayerInterface {
         int j = 0;
         while (iterator.hasNext() && j < ladderStartCellIndexes.size) {
 
-            ladderStartPos[j] = (int) (ladders.ladder.get(ladderStartCellIndexes.get(j)).x) - 1;
-            ladderEndPos[j] = (int) (ladders.ladder.get(ladderStartCellIndexes.get(j)).y) - 1;
+            ladderStartPos.add((int) (ladders.ladder.get(ladderStartCellIndexes.get(j)).x) - 1) ;
+            ladderEndPos.add((int) (ladders.ladder.get(ladderStartCellIndexes.get(j)).y) - 1);
             j++;
 
 
@@ -240,8 +261,8 @@ public class Board extends Table implements PlayerInterface {
 
         Random random = new Random();
         noOfSnakes = random.nextInt(3) + 3;
-        snakeStartPos = new int[noOfSnakes];
-        snakeEndPos = new int[noOfSnakes];
+        snakeStartPos = new Array<>();
+        snakeEndPos = new Array<>();
         for (int i = 0; i < noOfSnakes; i++) {
             int y = random.nextInt(9);
             if (!snakeBiteCellIndexes.contains(y, true))
@@ -266,13 +287,13 @@ public class Board extends Table implements PlayerInterface {
 
         for (int i = 0; i < snakesNumber; i++) {
 
-            Stack stack = (Stack) cells[snakeStartPos[i]].getActor();
+            Stack stack = (Stack) cells[snakeStartPos.get(i)].getActor();
             Vector2 snakeStartPosition = new Vector2();
             stack.localToActorCoordinates(table, snakeStartPosition);
 
             Vector2 snakeEndPosition = new Vector2();
 
-            Stack endStack = (Stack) cells[snakeEndPos[i]].getActor();
+            Stack endStack = (Stack) cells[snakeEndPos.get(i)].getActor();
             endStack.localToActorCoordinates(table, snakeEndPosition);
 
             Vector2 midPoint = getMidPoint(snakeStartPosition.x + cells[0].getMinWidth() / 2f, snakeStartPosition.y + cells[0].getMinHeight() / 2f
@@ -281,7 +302,7 @@ public class Board extends Table implements PlayerInterface {
             float snakeHeight = snakeEndPosition.dst(snakeStartPosition);
 
             Snakes snake = new Snakes(snakeHeight);
-
+            snakeCoordinates.put(snakeEndPos.get(i),snakeStartPos.get(i));
             snake.setPosition(midPoint.x, midPoint.y, Align.center);
 
 
@@ -307,8 +328,8 @@ public class Board extends Table implements PlayerInterface {
         int j = 0;
         while (iterator.hasNext() && j < snakeBiteCellIndexes.size) {
 
-            snakeEndPos[j] = (int) (snakes.snake.get(snakeBiteCellIndexes.get(j)).x) - 1;
-            snakeStartPos[j] = (int) (snakes.snake.get(snakeBiteCellIndexes.get(j)).y) - 1;
+            snakeEndPos.add((int) (snakes.snake.get(snakeBiteCellIndexes.get(j)).x) - 1);
+            snakeStartPos.add((int) (snakes.snake.get(snakeBiteCellIndexes.get(j)).y) - 1);
             j++;
 
 

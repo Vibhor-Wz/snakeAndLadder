@@ -37,6 +37,8 @@ public class Huds extends Table {
 
     public Huds(Board board,Players bluePawnPlayer,Players greenPawnPlayer){
 
+        this.bluePawnPlayer = bluePawnPlayer;
+        this.greenPawnPlayer =greenPawnPlayer;
         setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
         this.board = board;
         pawnBlueTbl = new Table();
@@ -50,43 +52,43 @@ public class Huds extends Table {
         add(moveLeftTbl).top().expandX().fillX().row();
         add(createBottom()).bottom().expand().fill();
 
-        this.bluePawnPlayer = bluePawnPlayer;
-        this.greenPawnPlayer =greenPawnPlayer;
-        addListenersToPawns();
+
+//        addListenersToPawns();
 
     }
-    private void addListenersToPawns(){
-        numberOfBluePawnLeft =3;
-        pawnBlueTbl.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (numberOfBluePawnLeft >0) {
-                    Table t = (Table) pawnBlueTbl.getChild(numberOfBluePawnLeft -1);
-                    t.align(Align.center);
-                    board.movePawnBy(1, t);
-
-                    numberOfBluePawnLeft--;
-
-
-                }
-            }
-        });
-
-        numberOfGreenPawnLeft =3;
-        pawnGreenTbl.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (numberOfGreenPawnLeft >0) {
-
-                    board.movePawnBy(1, (Table) pawnGreenTbl.getChild(numberOfGreenPawnLeft -1));
-
-                    numberOfGreenPawnLeft--;
-                }
-
-            }
-        });
-
-    }
+//    private void addListenersToPawns(){
+//        numberOfBluePawnLeft =3;
+//        pawnBlueTbl.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                if (numberOfBluePawnLeft >0) {
+//                    Table t = (Table) pawnBlueTbl.getChild(numberOfBluePawnLeft -1);
+//                    t.align(Align.center);
+//                    board.movePawnTo(1, t);
+//
+//                    numberOfBluePawnLeft--;
+//
+//
+//                }
+//            }
+//        });
+//
+//        numberOfGreenPawnLeft =3;
+//        pawnGreenTbl.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                if (numberOfGreenPawnLeft >0) {
+//                    Table p=(Table)pawnGreenTbl.getChild(numberOfGreenPawnLeft -1);
+//                    p.align(Align.center);
+//                    board.movePawnTo(1, p);
+//
+//                    numberOfGreenPawnLeft--;
+//                }
+//
+//            }
+//        });
+//
+//    }
 
 
     private Table createBottom(){
@@ -136,21 +138,21 @@ public class Huds extends Table {
 
             if(pawnColor.equals(BLUE)) {
 
-                pawnBlueTbl.add(bluePawnPlayer.pawn1.pawnImgTbl).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
+                pawnBlueTbl.add(bluePawnPlayer.pawns[0].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
 
-                pawnBlueTbl.add(bluePawnPlayer.pawn2.pawnImgTbl).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
+                pawnBlueTbl.add(bluePawnPlayer.pawns[1].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
 
-                pawnBlueTbl.add(bluePawnPlayer.pawn3.pawnImgTbl).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
+                pawnBlueTbl.add(bluePawnPlayer.pawns[2].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
 
                 table.add(pawnBlueTbl).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
             }
             else {
 
-                    pawnGreenTbl.add(greenPawnPlayer.pawn1.pawnImgTbl).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
+                    pawnGreenTbl.add(greenPawnPlayer.pawns[0].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
 
-                    pawnGreenTbl.add(greenPawnPlayer.pawn1.pawnImgTbl).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
+                    pawnGreenTbl.add(greenPawnPlayer.pawns[1].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
 
-                    pawnGreenTbl.add(greenPawnPlayer.pawn1.pawnImgTbl).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
+                    pawnGreenTbl.add(greenPawnPlayer.pawns[2].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
 
                     table.add(pawnGreenTbl).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
 

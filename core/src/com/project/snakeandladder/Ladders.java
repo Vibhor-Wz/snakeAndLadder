@@ -36,7 +36,7 @@ public class Ladders extends Table {
         ladder.put(3,new Vector2(50, 88));
         ladder.put(4,new Vector2(13, 31));
         ladder.put(5,new Vector2(39, 81));
-        ladder.put(6,new Vector2(17, 45));
+        ladder.put(6,new Vector2(20, 63));
         ladder.put(7,new Vector2(7, 48));
         ladder.put(8,new Vector2(5, 58));
         ladder.put(9,new Vector2(30, 72));
