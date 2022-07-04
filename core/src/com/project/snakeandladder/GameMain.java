@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.util.Random;
+
 import Helpers.GameInfo;
 import Helpers.Huds;
 
@@ -21,19 +23,23 @@ public class GameMain extends Game{
 
 	private Stage stage;
 
-	Boolean player1Turn;
+
+
+	public static int roll;
+
+	private int playerTurn;
+	public static final int MAX_PLAYERS = 2;
 
 
 	@Override
 	public void create () {
+		roll=new Random().nextInt(6)+1;
 		batch = new SpriteBatch();
 		stage= new Stage();
-		player1Turn=true;
+
+		playerTurn = 1;
 		setScreen(new GamePlay(this,stage));
-
-
 		Gdx.input.setInputProcessor(stage);
-
 	}
 
 	@Override
@@ -50,12 +56,29 @@ public class GameMain extends Game{
 
 	}
 
-	public Boolean getPlayer1Turn() {
-		return player1Turn;
+	private void rollDice(){
+		Random random= new Random();
+		roll= random.nextInt(6)+1;
 	}
 
-	public void setPlayer1Turn(Boolean player1Turn) {
-		this.player1Turn = player1Turn;
+	public void changePlayerTurn(){
+		playerTurn++;
+		if(playerTurn > MAX_PLAYERS){
+			playerTurn = 1;
+		}
+		rollDice();
+		if(playerTurn==1){
+			Huds.diceRollPlayer1.setText(roll);
+		}
+		else {
+			Huds.diceRollPlayer2.setText(roll);
+		}
 	}
 
+	public int getPlayerTurn() {
+		return playerTurn;
+	}
+	public int getRoll() {
+		return roll;
+	}
 }

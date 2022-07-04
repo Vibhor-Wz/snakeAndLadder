@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.util.Random;
+
 import Helpers.GameInfo;
 import Helpers.Huds;
 
@@ -20,14 +22,18 @@ public class GamePlay implements Screen {
     private Board board;
     private Huds huds;
     private GameMain game;
-    private Players player1;
-    private Players player2;
+
+
+    public static Players player1;
+    public static Players player2;
+
+
     public GamePlay(GameMain game, Stage stage) {
         this.game=game;
 
         board = new Board();
-        this.player1 = new Players("Vibhor",board,BLUE);
-        this.player2 = new Players("Jai",board,GREEN);
+        player1 = new Players(game, "Vibhor", board, BLUE, 1);
+        player2 = new Players(game, "Jai", board, GREEN, 2);
 
 
         final Table container = new Table();
@@ -41,10 +47,10 @@ public class GamePlay implements Screen {
 
 
 
-        huds= new Huds(board, player1, player2,game.getPlayer1Turn());
+        huds= new Huds(board, player1, player2, game.getPlayerTurn());
 
         board.pack();
-        board.setPosition(GameInfo.WIDTH/2,GameInfo.HEIGHT*0.6f, Align.center);
+        board.setPosition(GameInfo.WIDTH/2f,GameInfo.HEIGHT*0.6f, Align.center);
         container.addActor(board);
 
         hudsContainer.add(huds).top().expandX().fillX().expandY().fillY();
@@ -96,4 +102,7 @@ public class GamePlay implements Screen {
     public void dispose() {
 
     }
+
+
+
 }

@@ -15,25 +15,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.project.snakeandladder.Board;
+import com.project.snakeandladder.GameMain;
 import com.project.snakeandladder.PawnAndPlayerType;
 import com.project.snakeandladder.Players;
 
 public class Huds extends Table {
-    private Label numberOFMovesLeft;
+    public static Label numberOFMovesLeft;
     private Label movePawnLbl;
     private Label movesLeftLbl;
     private Board board;
-    private Table pawnBlueTbl;
-    private Table pawnGreenTbl;
+    public static Table pawnBlueTbl;
+    public static Table pawnGreenTbl;
     public static Label diceRollPlayer1;
     public static Label diceRollPlayer2;
     private Players bluePawnPlayer;
     private Players greenPawnPlayer;
-    private Boolean player1Turn;
+    private int player1Turn;
     public static Label scorePlayer1;
     public static Label scorePlayer2;
+    public static Stack movePawnStack1;
 
-    public Huds(Board board,Players bluePawnPlayer,Players greenPawnPlayer, Boolean player1Turn){
+    public Huds(Board board,Players bluePawnPlayer,Players greenPawnPlayer, int player1Turn){
         this.player1Turn=player1Turn;
         this.bluePawnPlayer = bluePawnPlayer;
         this.greenPawnPlayer =greenPawnPlayer;
@@ -57,17 +59,16 @@ public class Huds extends Table {
         Table mainTable= new Table();
         mainTable.bottom();
 
-        mainTable.add(getDiceWithRollTbl(BLUE,player1Turn)).expandX().fillX();
-        mainTable.add(getDiceWithRollTbl(GREEN,(!player1Turn))).expandX().fillX().row();
+        mainTable.add(getDiceWithRollTbl(BLUE, 1)).expandX().fillX();
+        mainTable.add(getDiceWithRollTbl(GREEN,2)).expandX().fillX().row();
         mainTable.add(getScoreBoardOfPlayer1(bluePawnPlayer.getName())).expandX().fillX();
         mainTable.add(getScoreBoardOfPlayer2(greenPawnPlayer.getName())).expandX().fillX();
         return mainTable;
     }
-    private Table getDiceWithRollTbl(PawnAndPlayerType pawnColor, boolean playerTurn){
+    private Table getDiceWithRollTbl(PawnAndPlayerType pawnColor, int playerTurn){
         Table table= new Table();
         table.add(getPawnAndDiceRollTbl(pawnColor));
-        if(playerTurn) {
-
+        if(playerTurn ==1) {
             table.add(getMovePawnLblTable()).padLeft(-GameInfo.WIDTH * 0.04f);
         }
         return table;
@@ -75,7 +76,7 @@ public class Huds extends Table {
     private Table getMovePawnLblTable(){
         Table table= new Table();
         Table movePawnTbl=new Table();
-        Stack movePawnStack= new Stack();
+        movePawnStack1 = new Stack();
 
         Image t= new Image(new Texture("MovePawn.png"));
         t.setColor(Color.valueOf("#6de70a"));
@@ -85,11 +86,12 @@ public class Huds extends Table {
         movePawnLbl= new Label("MOVE PAWN", getLabelStyle(Color.BLACK, GameInfo.WIDTH*0.017f));
         movePawnLbl.setWrap(true);
         movePawnLbl.setAlignment(Align.center);
-        movePawnStack.add(tTbl);
-        movePawnTbl.add(movePawnLbl).width(GameInfo.WIDTH*0.2f).padLeft(movePawnStack.getMinWidth()*0.15f);
+        movePawnStack1.add(tTbl);
+        movePawnTbl.add(movePawnLbl).width(GameInfo.WIDTH*0.2f).padLeft(movePawnStack1.getMinWidth()*0.15f);
         movePawnTbl.align(Align.center);
-        movePawnStack.add(movePawnTbl);
-        table.add(movePawnStack);
+        movePawnStack1.add(movePawnTbl);
+
+        table.add(movePawnStack1);
         return table;
     }
 
@@ -100,33 +102,37 @@ public class Huds extends Table {
 
             if(pawnColor.equals(BLUE)) {
 
-                pawnBlueTbl.add(bluePawnPlayer.pawns[0].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
+                pawnBlueTbl.add(bluePawnPlayer.pawns[0]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
 
-                pawnBlueTbl.add(bluePawnPlayer.pawns[1].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
+                pawnBlueTbl.add(bluePawnPlayer.pawns[1]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
 
-                pawnBlueTbl.add(bluePawnPlayer.pawns[2].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
+                pawnBlueTbl.add(bluePawnPlayer.pawns[2]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
 
                 table.add(pawnBlueTbl).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
 
+                diceRollPlayer1 = new Label(String.valueOf(GameMain.roll),getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.03f));
+                table.add(diceRollPlayer1);
             }
             else {
 
-                    pawnGreenTbl.add(greenPawnPlayer.pawns[0].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
+                    pawnGreenTbl.add(greenPawnPlayer.pawns[0]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
 
-                    pawnGreenTbl.add(greenPawnPlayer.pawns[1].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
+                    pawnGreenTbl.add(greenPawnPlayer.pawns[1]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
 
-                    pawnGreenTbl.add(greenPawnPlayer.pawns[2].pawn).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
+                    pawnGreenTbl.add(greenPawnPlayer.pawns[2]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
 
                     table.add(pawnGreenTbl).width(GameInfo.WIDTH * 0.1f).padBottom(GameInfo.HEIGHT * 0.0129625f).row();
 
+                diceRollPlayer2 = new Label("",getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.03f));
+                table.add(diceRollPlayer2);
             }
 
 
-        diceRollPlayer1 = new Label("5",getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.03f));
-        table.add(diceRollPlayer1);
+
 
         return table;
     }
+
 
     private Table getScoreBoardOfPlayer1(String playerName){
         Table table= new Table();

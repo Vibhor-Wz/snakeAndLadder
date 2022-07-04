@@ -1,5 +1,6 @@
 package com.project.snakeandladder;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -18,115 +19,102 @@ public class Players{
     private String id;
     private int playerScore;
     private int noOfMovesLeft;
-    private Boolean turn;
-    private Map<Table,Integer> playerPawnMap;
+    private Map<Integer,Integer> playerPawnMap;
     private Board board;
     private PawnAndPlayerType playerType;
     public Pawns[] pawns;
-    public int timer;
-    private int roll;
 
-    public Players(String name, Board board, PawnAndPlayerType playerType){
+
+    private final int playerTurnId;
+    private GameMain game;
+
+
+    public Players(GameMain game, String name, Board board, PawnAndPlayerType playerType, int playerTurnId){
+        this.game = game;
+        this.playerTurnId = playerTurnId;
         pawns= new Pawns[3];
         createPawns(playerType);
         playerScore=0;
         noOfMovesLeft=18;
-        roll=1;
         this.board=board;
-        turn=false;
         playerPawnMap= new HashMap<>();
         this.name = name;
         this.id = UUID.randomUUID().toString();
         this.board = board;
         this.playerType=playerType;
         initPlayerPawn();
-        addListenersToPawns();
-    }
-    private void createRoll(){
-        Random random= new Random();
-        int x=random.nextInt(6)+1;
 
+        addListenersToPawns();
     }
 
     private void initPlayerPawn() {
         for(int i=0;i<3;i++){
-            playerPawnMap.put(pawns[i].pawn,pawns[i].getPosition());
+            playerPawnMap.put(i+1,pawns[i].getPosition());
         }
 
     }
 
     void createPawns(PawnAndPlayerType pawnType){
         for(int i=0;i<3;i++){
-            pawns[i]= new Pawns(pawnType);
+            pawns[i]= new Pawns(pawnType,i+1);
         }
 
 
     }
-    void addListenersToPawns(){
+    public void addListenersToPawns(){
         final Players p=this;
-        pawns[0].pawn.addListener(new ClickListener(){
+        pawns[0].addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Random random = new Random();
-                roll = random.nextInt(6)+1;
-                Huds.diceRollPlayer1.setText(roll);
 
                 int previousPos = pawns[0].getPosition();
-                pawns[0].updatePosition(roll);
-                    board.movePawnTo(previousPos + roll, pawns[0].pawn,previousPos,pawns[0],p);
+//                pawns[0].updatePosition(roll);
+                    if(playerTurnId == game.getPlayerTurn()){
+                        board.movePawnTo(previousPos + game.getRoll(), pawns[0],previousPos,p,1);
+                        game.changePlayerTurn();
+                    }else{
+                        System.out.println("Please wait for your turn");
+                    }
 
-                if(playerType.equals(PawnAndPlayerType.BLUE)){
-                    Huds.scorePlayer1.setText(playerScore);
-                }
-                else{
-                    Huds.scorePlayer2.setText(playerScore);
-                }
+
 
             }
         });
-        pawns[1].pawn.addListener(new ClickListener(){
+        pawns[1].addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Random random = new Random();
-                roll = random.nextInt(6)+1;
-                Huds.diceRollPlayer1.setText(roll);
+
                 int previousPos = pawns[1].getPosition();
-                pawns[1].updatePosition(roll);
-                board.movePawnTo(previousPos + roll, pawns[1].pawn,previousPos,pawns[1],p);
-
-                if(playerType.equals(PawnAndPlayerType.BLUE)){
-                    Huds.scorePlayer1.setText(playerScore);
-                }
-                else{
-                    Huds.scorePlayer2.setText(playerScore);
+//                pawns[1].updatePosition(roll);
+                if(playerTurnId == game.getPlayerTurn()){
+                    board.movePawnTo(previousPos + game.getRoll(), pawns[1],previousPos,p,2);
+                    game.changePlayerTurn();
+                }else{
+                    System.out.println("Please wait for your turn");
                 }
             }
         });
-        pawns[2].pawn.addListener(new ClickListener(){
+        pawns[2].addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Random random = new Random();
-                roll = random.nextInt(6)+1;
-                Huds.diceRollPlayer1.setText(roll);
+
                 int previousPos = pawns[2].getPosition();
-                pawns[2].updatePosition(roll);
+//
 
-                board.movePawnTo(previousPos + 1, pawns[2].pawn, previousPos,pawns[2],p);
-
-
-                if(playerType.equals(PawnAndPlayerType.BLUE)){
-                    Huds.scorePlayer1.setText(playerScore);
-                }
-                else{
-                    Huds.scorePlayer2.setText(playerScore);
+                if(playerTurnId == game.getPlayerTurn()){
+                    board.movePawnTo(previousPos + game.getRoll(), pawns[2],previousPos,p,3);
+                    game.changePlayerTurn();
+                }else{
+                    System.out.println("Please wait for your turn");
                 }
             }
         });
-
     }
 
-    public void updatePlayerPawn(Table pawn,int position) {
-        playerPawnMap.put(pawn,position);
+
+    public void updatePlayerPawn(int id,int position) {
+
+        playerPawnMap.put(id,position);
     }
 
 
@@ -146,16 +134,8 @@ public class Players{
         return playerScore;
     }
 
-    public Boolean getTurn() {
-        return turn;
-    }
 
-    public void setTurn(Boolean turn) {
-        this.turn = turn;
-    }
-
-
-    public Map<Table, Integer> getPlayerPawnMap() {
+    public Map<Integer, Integer> getPlayerPawnMap() {
         return playerPawnMap;
     }
 
@@ -166,6 +146,9 @@ public class Players{
         return name;
     }
 
+    public int getPlayerTurnId() {
+        return playerTurnId;
+    }
 
 
 }

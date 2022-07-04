@@ -26,6 +26,7 @@ import java.util.Set;
 
 import Helpers.Font;
 import Helpers.GameInfo;
+import Helpers.Huds;
 
 public class Board extends Table implements PlayerInterface {
 
@@ -65,7 +66,8 @@ public class Board extends Table implements PlayerInterface {
 
     }
 
-    public void movePawnTo(final int targetCellNo, final Table pawn, int previousCellNo, final Pawns classPawn, Players p) {
+    public void movePawnTo(final int targetCellNo, final Pawns pawn,
+                           int previousCellNo, Players p, int pawnId) {
 
         if(targetCellNo>previousCellNo) {
 
@@ -80,8 +82,9 @@ public class Board extends Table implements PlayerInterface {
                  }
 
                  addActor(pawn);
-                classPawn.setPosition(targetCellNo);
+
              }
+            pawn.setPositionOnBoard(targetCellNo);
         }
 
         Timer.schedule(new Timer.Task() {
@@ -97,7 +100,7 @@ public class Board extends Table implements PlayerInterface {
                     }
 
                     addActor(pawn);
-                    classPawn.setPosition(ladderCoordinates.get(targetCellNo-1)+1);
+                    pawn.setPositionOnBoard(ladderCoordinates.get(targetCellNo-1)+1);
 
 
                 }
@@ -111,16 +114,73 @@ public class Board extends Table implements PlayerInterface {
                     }
 
                     addActor(pawn);
-                    classPawn.setPosition(snakeCoordinates.get(targetCellNo-1)+1);
+                    pawn.setPositionOnBoard(snakeCoordinates.get(targetCellNo-1)+1);
                 }
             }
         },0.4f);
 
-        p.updatePlayerPawn(pawn,classPawn.getPosition());
-        p.updatePlayerScore();
 
+        p.updatePlayerPawn(pawnId,pawn.getPosition());
+        p.updatePlayerScore();
+        if(p.getPlayerType().equals(PawnAndPlayerType.BLUE))
+             Huds.scorePlayer1.setText(p.getPlayerScore());
+        else
+            Huds.scorePlayer2.setText(p.getPlayerScore());
+
+        isAnotherPlayerPawnPresent(p, targetCellNo);
+    }
+    void isAnotherPlayerPawnPresent(Players player,int targetCellNo){
+        if(player.getPlayerTurnId()==1 && GamePlay.player2.getPlayerPawnMap().values().contains(targetCellNo)){
+
+            int key = getKey(GamePlay.player2.getPlayerPawnMap(), targetCellNo);
+            if(key==1){
+                Huds.pawnGreenTbl.add(GamePlay.player1.pawns[0]);
+                GamePlay.player2.pawns[0].setPositionOnBoard(0);
+            }
+            else if(key==2){
+                Huds.pawnGreenTbl.add(GamePlay.player1.pawns[1]);
+                GamePlay.player2.pawns[1].setPositionOnBoard(0);
+            }
+            else{
+                Huds.pawnGreenTbl.add(GamePlay.player1.pawns[2]);
+                GamePlay.player2.pawns[2].setPositionOnBoard(0);
             }
 
+
+            GamePlay.player2.updatePlayerPawn(key,0);
+            GamePlay.player2.updatePlayerScore();
+            Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
+
+        }
+        else if(player.getPlayerTurnId()==2 && GamePlay.player1.getPlayerPawnMap().values().contains(targetCellNo)) {
+            int key = getKey(GamePlay.player1.getPlayerPawnMap(), targetCellNo);
+            if(key==1){
+                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[0]);
+                GamePlay.player1.pawns[0].setPositionOnBoard(0);
+            }
+            else if(key==2){
+                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[1]);
+                GamePlay.player1.pawns[1].setPositionOnBoard(0);
+            }
+            else{
+                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[2]);
+                GamePlay.player1.pawns[2].setPositionOnBoard(0);
+            }
+
+
+            GamePlay.player1.updatePlayerPawn(key,0);
+            GamePlay.player1.updatePlayerScore();
+            Huds.scorePlayer1.setText(GamePlay.player1.getPlayerScore());
+        }
+    }
+    public <K, V> K getKey(Map<K, V> map, V value) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            if (entry.getValue().equals(value)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 
 
     private Table createBoard() {
