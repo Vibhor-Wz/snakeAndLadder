@@ -21,18 +21,17 @@ import Helpers.Huds;
 public class GameMain extends Game{
 	SpriteBatch batch;
 
-	private Stage stage;
-
-
+	public static Stage stage;
 
 	public static int roll;
-
+	public static int movesLeft;
 	private int playerTurn;
 	public static final int MAX_PLAYERS = 2;
 
 
 	@Override
 	public void create () {
+		movesLeft=18;
 		roll=new Random().nextInt(6)+1;
 		batch = new SpriteBatch();
 		stage= new Stage();

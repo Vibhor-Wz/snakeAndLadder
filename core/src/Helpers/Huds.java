@@ -28,12 +28,13 @@ public class Huds extends Table {
     public static Table pawnGreenTbl;
     public static Label diceRollPlayer1;
     public static Label diceRollPlayer2;
-    private Players bluePawnPlayer;
-    private Players greenPawnPlayer;
+    public static Players bluePawnPlayer;
+    public static Players greenPawnPlayer;
     private int player1Turn;
     public static Label scorePlayer1;
     public static Label scorePlayer2;
     public static Stack movePawnStack1;
+    public static Stack movePawnStack2;
 
     public Huds(Board board,Players bluePawnPlayer,Players greenPawnPlayer, int player1Turn){
         this.player1Turn=player1Turn;
@@ -44,7 +45,8 @@ public class Huds extends Table {
         pawnBlueTbl = new Table();
         pawnGreenTbl = new Table();
         Table moveLeftTbl= new Table();
-        numberOFMovesLeft= new Label("18", getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.055f));
+        numberOFMovesLeft= new Label(String.valueOf(GameMain.movesLeft)
+                , getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.055f));
         movesLeftLbl = new Label("MOVES LEFT",getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.02f));
         movesLeftLbl.setWrap(true);
         moveLeftTbl.add(numberOFMovesLeft).padRight(GameInfo.WIDTH*0.02f);
@@ -71,6 +73,8 @@ public class Huds extends Table {
         if(playerTurn ==1) {
             table.add(getMovePawnLblTable()).padLeft(-GameInfo.WIDTH * 0.04f);
         }
+        else
+            table.add(getMovePawnLblTable2()).padLeft(-GameInfo.WIDTH * 0.04f);
         return table;
     }
     private Table getMovePawnLblTable(){
@@ -87,14 +91,41 @@ public class Huds extends Table {
         movePawnLbl.setWrap(true);
         movePawnLbl.setAlignment(Align.center);
         movePawnStack1.add(tTbl);
+
         movePawnTbl.add(movePawnLbl).width(GameInfo.WIDTH*0.2f).padLeft(movePawnStack1.getMinWidth()*0.15f);
         movePawnTbl.align(Align.center);
         movePawnStack1.add(movePawnTbl);
 
+
         table.add(movePawnStack1);
+
+
         return table;
     }
+    private Table getMovePawnLblTable2(){
+        Table table= new Table();
+        Table movePawnTbl=new Table();
 
+        movePawnStack2= new Stack();
+        Image t= new Image(new Texture("MovePawn.png"));
+        t.setColor(Color.valueOf("#6de70a"));
+        Table tTbl=new Table();
+        tTbl.add(t).width(GameInfo.WIDTH*0.16f).height(GameInfo.HEIGHT*0.06f);
+
+        movePawnLbl= new Label("MOVE PAWN", getLabelStyle(Color.BLACK, GameInfo.WIDTH*0.017f));
+        movePawnLbl.setWrap(true);
+        movePawnLbl.setAlignment(Align.center);
+
+        movePawnStack2.add(tTbl);
+        movePawnTbl.add(movePawnLbl).width(GameInfo.WIDTH*0.2f).padLeft(movePawnStack1.getMinWidth()*0.15f);
+        movePawnTbl.align(Align.center);
+
+        movePawnStack2.add(movePawnTbl);
+        movePawnStack2.setVisible(false);
+        table.add(movePawnStack2);
+
+        return table;
+    }
     private Table getPawnAndDiceRollTbl(PawnAndPlayerType pawnColor){
         Table table= new Table();
         pawnBlueTbl.setTouchable(Touchable.enabled);
@@ -195,7 +226,7 @@ public class Huds extends Table {
         table.add(playerPicture);
         return table;
     }
-    private BitmapFont getNormalFont(float size) {
+    public static BitmapFont getNormalFont(float size) {
         Texture texture = new Texture(Gdx.files.internal
                 ("Fonts/MyFont.png"), true);
 
@@ -204,7 +235,7 @@ public class Huds extends Table {
         return font;
 
     }
-    private Label.LabelStyle getLabelStyle(Color color, float fontSize){
+    public Label.LabelStyle getLabelStyle(Color color, float fontSize){
         Label.LabelStyle style= new Label.LabelStyle();
         style.font=getNormalFont(fontSize);
         style.fontColor=color;

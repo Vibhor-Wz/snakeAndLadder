@@ -16,9 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
-import com.project.snakeandladder.interfaces.PlayerInterface;
 
+
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
@@ -28,7 +30,7 @@ import Helpers.Font;
 import Helpers.GameInfo;
 import Helpers.Huds;
 
-public class Board extends Table implements PlayerInterface {
+public class Board extends Table {
 
     Table table;
     private Cell[] cells;
@@ -127,10 +129,12 @@ public class Board extends Table implements PlayerInterface {
         else
             Huds.scorePlayer2.setText(p.getPlayerScore());
 
-        isAnotherPlayerPawnPresent(p, targetCellNo);
+        ifAnotherPlayerPawnPresent(p, targetCellNo);
     }
-    void isAnotherPlayerPawnPresent(Players player,int targetCellNo){
-        if(player.getPlayerTurnId()==1 && GamePlay.player2.getPlayerPawnMap().values().contains(targetCellNo)){
+    void ifAnotherPlayerPawnPresent(Players player,int targetCellNo){
+        if(!isMoreThanOneColorPawnPresent(GamePlay.player2,targetCellNo) &&
+                player.getPlayerTurnId()==1 &&
+                GamePlay.player2.getPlayerPawnMap().values().contains(targetCellNo)){
 
             int key = getKey(GamePlay.player2.getPlayerPawnMap(), targetCellNo);
             if(key==1){
@@ -152,7 +156,9 @@ public class Board extends Table implements PlayerInterface {
             Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
 
         }
-        else if(player.getPlayerTurnId()==2 && GamePlay.player1.getPlayerPawnMap().values().contains(targetCellNo)) {
+        else if(!isMoreThanOneColorPawnPresent(GamePlay.player1,targetCellNo) &&
+                player.getPlayerTurnId()==2 &&
+                GamePlay.player1.getPlayerPawnMap().values().contains(targetCellNo)) {
             int key = getKey(GamePlay.player1.getPlayerPawnMap(), targetCellNo);
             if(key==1){
                 Huds.pawnBlueTbl.add(GamePlay.player1.pawns[0]);
@@ -172,6 +178,14 @@ public class Board extends Table implements PlayerInterface {
             GamePlay.player1.updatePlayerScore();
             Huds.scorePlayer1.setText(GamePlay.player1.getPlayerScore());
         }
+    }
+    public Boolean isMoreThanOneColorPawnPresent(Players player,int targetCellNo){
+        Set<Integer> uniqueValues = new HashSet<Integer>(player.getPlayerPawnMap().values());
+      if(uniqueValues.size()<3)
+          return true;
+
+      else
+          return false;
     }
     public <K, V> K getKey(Map<K, V> map, V value) {
         for (Map.Entry<K, V> entry : map.entrySet()) {
@@ -445,9 +459,5 @@ public class Board extends Table implements PlayerInterface {
         return snakeInitialized;
     }
 
-    @Override
-    public void getData(String value,String playerName) {
-
-    }
 }
 

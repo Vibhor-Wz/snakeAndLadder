@@ -1,8 +1,11 @@
 package com.project.snakeandladder;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import java.util.HashMap;
@@ -10,6 +13,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import Helpers.GameInfo;
 import Helpers.Huds;
 
 
@@ -23,7 +27,6 @@ public class Players{
     private Board board;
     private PawnAndPlayerType playerType;
     public Pawns[] pawns;
-
 
     private final int playerTurnId;
     private GameMain game;
@@ -72,6 +75,34 @@ public class Players{
                     if(playerTurnId == game.getPlayerTurn()){
                         board.movePawnTo(previousPos + game.getRoll(), pawns[0],previousPos,p,1);
                         game.changePlayerTurn();
+                        if(game.getPlayerTurn()==1) {
+                            Huds.movePawnStack1.setVisible(true);
+                            Huds.movePawnStack2.setVisible(false);
+                            if(GameMain.movesLeft>0) {
+                                GameMain.movesLeft--;
+                                Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
+                            }
+                            else{
+                                System.out.print("GameOver");
+                                Window.WindowStyle windowStyle= new Window.WindowStyle();
+                                windowStyle.titleFont= Huds.getNormalFont(GameInfo.WIDTH*0.01f);
+                                windowStyle.titleFontColor= Color.BLACK;
+                                if(Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore){
+                                    new Dialog(Huds.bluePawnPlayer.name+" Won With Score "+ Huds.bluePawnPlayer.playerScore
+                                            ,windowStyle).show(GameMain.stage);
+                                }
+                                else{
+                                    new Dialog(Huds.greenPawnPlayer.name+" Won With Score "+ Huds.greenPawnPlayer.playerScore
+                                            ,windowStyle).show(GameMain.stage);
+                                }
+
+                            }
+                        }
+                        else{
+                            Huds.movePawnStack1.setVisible(false);
+                            Huds.movePawnStack2.setVisible(true);
+                        }
+
                     }else{
                         System.out.println("Please wait for your turn");
                     }
@@ -89,6 +120,32 @@ public class Players{
                 if(playerTurnId == game.getPlayerTurn()){
                     board.movePawnTo(previousPos + game.getRoll(), pawns[1],previousPos,p,2);
                     game.changePlayerTurn();
+                    if(game.getPlayerTurn()==1) {
+                        Huds.movePawnStack1.setVisible(true);
+                        Huds.movePawnStack2.setVisible(false);
+                        if(GameMain.movesLeft>0) {
+                            GameMain.movesLeft--;
+                            Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
+                        }
+                        else{
+                            System.out.print("GameOver");
+                            Window.WindowStyle windowStyle= new Window.WindowStyle();
+                            windowStyle.titleFont= Huds.getNormalFont(GameInfo.WIDTH*0.01f);
+                            windowStyle.titleFontColor= Color.BLACK;
+                            if(Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore){
+                                new Dialog(Huds.bluePawnPlayer.name+" Won With Score "+ Huds.bluePawnPlayer.playerScore
+                                        ,windowStyle).show(GameMain.stage);
+                            }
+                            else{
+                                new Dialog(Huds.greenPawnPlayer.name+" Won With Score "+ Huds.greenPawnPlayer.playerScore
+                                        ,windowStyle).show(GameMain.stage);
+                            }
+                        }
+                    }
+                    else{
+                        Huds.movePawnStack1.setVisible(false);
+                        Huds.movePawnStack2.setVisible(true);
+                    }
                 }else{
                     System.out.println("Please wait for your turn");
                 }
@@ -104,6 +161,32 @@ public class Players{
                 if(playerTurnId == game.getPlayerTurn()){
                     board.movePawnTo(previousPos + game.getRoll(), pawns[2],previousPos,p,3);
                     game.changePlayerTurn();
+                    if(game.getPlayerTurn()==1) {
+                        Huds.movePawnStack1.setVisible(true);
+                        Huds.movePawnStack2.setVisible(false);
+                        if(GameMain.movesLeft>0) {
+                            GameMain.movesLeft--;
+                            Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
+                        }
+                        else{
+                            System.out.print("GameOver");
+                            Window.WindowStyle windowStyle= new Window.WindowStyle();
+                            windowStyle.titleFont= Huds.getNormalFont(GameInfo.WIDTH*0.01f);
+                            windowStyle.titleFontColor= Color.BLACK;
+                            if(Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore){
+                                new Dialog(Huds.bluePawnPlayer.name+" Won With Score "+ Huds.bluePawnPlayer.playerScore
+                                        ,windowStyle).show(GameMain.stage);
+                            }
+                            else{
+                                new Dialog(Huds.greenPawnPlayer.name+" Won With Score "+ Huds.greenPawnPlayer.playerScore
+                                        ,windowStyle).show(GameMain.stage);
+                            }
+                        }
+                    }
+                    else{
+                        Huds.movePawnStack1.setVisible(false);
+                        Huds.movePawnStack2.setVisible(true);
+                    }
                 }else{
                     System.out.println("Please wait for your turn");
                 }
