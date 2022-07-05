@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,13 +73,17 @@ public class Players{
 
                 int previousPos = pawns[0].getPosition();
 //                pawns[0].updatePosition(roll);
-                    if(playerTurnId == game.getPlayerTurn()){
+                    if(playerTurnId == game.getPlayerTurn() && previousPos != 100 ){
                         board.movePawnTo(previousPos + game.getRoll(), pawns[0],previousPos,p,1);
                         game.changePlayerTurn();
                         if(game.getPlayerTurn()==1) {
                             Huds.movePawnStack1.setVisible(true);
                             Huds.movePawnStack2.setVisible(false);
-                            if(GameMain.movesLeft>0) {
+                            Drawable d=Huds.player2ScoreBoard.getBackground();
+                            Huds.player1ScoreBoard.setBackground(d);
+                            d=null;
+                            Huds.player2ScoreBoard.setBackground(d);
+                            if(GameMain.movesLeft>1) {
                                 GameMain.movesLeft--;
                                 Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
                             }
@@ -101,14 +106,25 @@ public class Players{
                         else{
                             Huds.movePawnStack1.setVisible(false);
                             Huds.movePawnStack2.setVisible(true);
+                            Drawable d=Huds.player1ScoreBoard.getBackground();
+                            Huds.player2ScoreBoard.setBackground(d);
+                            d=null;
+                            Huds.player1ScoreBoard.setBackground(d);
                         }
 
                     }else{
                         System.out.println("Please wait for your turn");
                     }
-
-
-
+                if(pawns[0].getPosition()==100){
+                    pawns[0].removeListener(this);
+                }
+                if(p.playerScore==300){
+                    Window.WindowStyle windowStyle= new Window.WindowStyle();
+                    windowStyle.titleFont= Huds.getNormalFont(GameInfo.WIDTH*0.01f);
+                    windowStyle.titleFontColor= Color.BLACK;
+                    new Dialog(p.name+" Won With Score "+ p.playerScore
+                            ,windowStyle).show(GameMain.stage);
+                }
             }
         });
         pawns[1].addListener(new ClickListener(){
@@ -117,13 +133,17 @@ public class Players{
 
                 int previousPos = pawns[1].getPosition();
 //                pawns[1].updatePosition(roll);
-                if(playerTurnId == game.getPlayerTurn()){
+                if(playerTurnId == game.getPlayerTurn() && previousPos != 100){
                     board.movePawnTo(previousPos + game.getRoll(), pawns[1],previousPos,p,2);
                     game.changePlayerTurn();
                     if(game.getPlayerTurn()==1) {
                         Huds.movePawnStack1.setVisible(true);
                         Huds.movePawnStack2.setVisible(false);
-                        if(GameMain.movesLeft>0) {
+                        Drawable d=Huds.player2ScoreBoard.getBackground();
+                        Huds.player1ScoreBoard.setBackground(d);
+                        d=null;
+                        Huds.player2ScoreBoard.setBackground(d);
+                        if(GameMain.movesLeft>1) {
                             GameMain.movesLeft--;
                             Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
                         }
@@ -145,9 +165,23 @@ public class Players{
                     else{
                         Huds.movePawnStack1.setVisible(false);
                         Huds.movePawnStack2.setVisible(true);
+                        Drawable d=Huds.player1ScoreBoard.getBackground();
+                        Huds.player2ScoreBoard.setBackground(d);
+                        d=null;
+                        Huds.player1ScoreBoard.setBackground(d);
                     }
                 }else{
                     System.out.println("Please wait for your turn");
+                }
+                if(pawns[1].getPosition()==100){
+                    pawns[1].removeListener(this);
+                }
+                if(p.playerScore==300){
+                    Window.WindowStyle windowStyle= new Window.WindowStyle();
+                    windowStyle.titleFont= Huds.getNormalFont(GameInfo.WIDTH*0.01f);
+                    windowStyle.titleFontColor= Color.BLACK;
+                    new Dialog(p.name+" Won With Score "+ p.playerScore
+                            ,windowStyle).show(GameMain.stage);
                 }
             }
         });
@@ -158,17 +192,23 @@ public class Players{
                 int previousPos = pawns[2].getPosition();
 //
 
-                if(playerTurnId == game.getPlayerTurn()){
+                if(playerTurnId == game.getPlayerTurn() && previousPos != 100){
                     board.movePawnTo(previousPos + game.getRoll(), pawns[2],previousPos,p,3);
                     game.changePlayerTurn();
                     if(game.getPlayerTurn()==1) {
                         Huds.movePawnStack1.setVisible(true);
                         Huds.movePawnStack2.setVisible(false);
+                        Drawable d=Huds.player2ScoreBoard.getBackground();
+                        Huds.player1ScoreBoard.setBackground(d);
+                        d=null;
+                        Huds.player2ScoreBoard.setBackground(d);
                         if(GameMain.movesLeft>0) {
                             GameMain.movesLeft--;
                             Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
                         }
                         else{
+                            GameMain.movesLeft--;
+                            Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
                             System.out.print("GameOver");
                             Window.WindowStyle windowStyle= new Window.WindowStyle();
                             windowStyle.titleFont= Huds.getNormalFont(GameInfo.WIDTH*0.01f);
@@ -186,9 +226,25 @@ public class Players{
                     else{
                         Huds.movePawnStack1.setVisible(false);
                         Huds.movePawnStack2.setVisible(true);
+                        Drawable d=Huds.player1ScoreBoard.getBackground();
+                        Huds.player2ScoreBoard.setBackground(d);
+                        d=null;
+                        Huds.player1ScoreBoard.setBackground(d);
+
                     }
                 }else{
                     System.out.println("Please wait for your turn");
+                }
+                if(pawns[2].getPosition()==100){
+                    pawns[2].removeListener(this);
+                }
+                if(p.playerScore==300){
+                    Window.WindowStyle windowStyle= new Window.WindowStyle();
+                    windowStyle.titleFont= Huds.getNormalFont(GameInfo.WIDTH*0.01f);
+                    windowStyle.titleFontColor= Color.BLACK;
+
+                    new Dialog(p.name+" Won With Score "+ p.playerScore
+                            ,windowStyle).show(GameMain.stage);
                 }
             }
         });

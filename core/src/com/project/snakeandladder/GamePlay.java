@@ -5,9 +5,13 @@ import static com.project.snakeandladder.PawnAndPlayerType.GREEN;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -20,6 +24,8 @@ public class GamePlay implements Screen {
 
     private Stage stage;
     private Board board;
+
+
     private Huds huds;
     private GameMain game;
 
@@ -31,12 +37,13 @@ public class GamePlay implements Screen {
     public GamePlay(GameMain game, Stage stage, String player1Name,String player2Name ) {
         this.game=game;
 
-        board = new Board();
+        board = new Board(this);
         player1 = new Players(game, player1Name, board, BLUE, 1);
         player2 = new Players(game, player2Name, board, GREEN, 2);
 
 
         final Table container = new Table();
+        container.background(bg());
         container.setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
 
         Stack stack= new Stack();
@@ -59,6 +66,15 @@ public class GamePlay implements Screen {
 
         this.stage=stage;
         stage.addActor(container);
+    }
+    private Drawable bg(){
+        Pixmap pixmap=new Pixmap(1,1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.valueOf("#0d4345"));
+        pixmap.fill();
+
+        TextureRegionDrawable drawable= new TextureRegionDrawable(new Texture(pixmap));
+        pixmap.dispose();
+        return drawable;
     }
 
     @Override
@@ -102,6 +118,10 @@ public class GamePlay implements Screen {
     public void dispose() {
 
     }
+    public Huds getHuds() {
+        return huds;
+    }
+
 
 
 

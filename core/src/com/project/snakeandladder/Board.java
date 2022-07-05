@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -46,11 +47,11 @@ public class Board extends Table {
     private int noOfLadders;
     Map<Integer,Integer> ladderCoordinates;
     Map<Integer,Integer> snakeCoordinates;
+    private GamePlay gamePlay;
 
 
-
-    public Board() {
-
+    public Board(GamePlay gamePlay) {
+        this.gamePlay=gamePlay;
         cells = new Cell[100];
         setWidth(GameInfo.WIDTH);
         snakeBiteCellIndexes = new Array<>();
@@ -71,7 +72,7 @@ public class Board extends Table {
     public void movePawnTo(final int targetCellNo, final Pawns pawn,
                            int previousCellNo, Players p, int pawnId) {
 
-        if(targetCellNo>previousCellNo) {
+        if(targetCellNo>previousCellNo && targetCellNo <= 100) {
 
              for (int i = previousCellNo-1; i <targetCellNo-1;i++) {
 
@@ -81,6 +82,7 @@ public class Board extends Table {
                  if (targetCell.getActor() != null) {
                      stack = (Stack) targetCell.getActor();
                      pawn.setPosition(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY());
+
                  }
 
                  addActor(pawn);
@@ -132,21 +134,21 @@ public class Board extends Table {
         ifAnotherPlayerPawnPresent(p, targetCellNo);
     }
     void ifAnotherPlayerPawnPresent(Players player,int targetCellNo){
-        if(!isMoreThanOneColorPawnPresent(GamePlay.player2) &&
+        if(!isMoreThanOneColorPawnPresent(GamePlay.player2,targetCellNo) &&
                 player.getPlayerTurnId()==1 &&
                 GamePlay.player2.getPlayerPawnMap().values().contains(targetCellNo)){
 
             int key = getKey(GamePlay.player2.getPlayerPawnMap(), targetCellNo);
             if(key==1){
-                Huds.pawnGreenTbl.add(GamePlay.player1.pawns[0]);
+                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[0]);
                 GamePlay.player2.pawns[0].setPositionOnBoard(0);
             }
             else if(key==2){
-                Huds.pawnGreenTbl.add(GamePlay.player1.pawns[1]);
+                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[1]);
                 GamePlay.player2.pawns[1].setPositionOnBoard(0);
             }
             else{
-                Huds.pawnGreenTbl.add(GamePlay.player1.pawns[2]);
+                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[2]);
                 GamePlay.player2.pawns[2].setPositionOnBoard(0);
             }
 
@@ -156,7 +158,7 @@ public class Board extends Table {
             Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
 
         }
-        else if(!isMoreThanOneColorPawnPresent(GamePlay.player1) &&
+        else if(!isMoreThanOneColorPawnPresent(GamePlay.player1,targetCellNo) &&
                 player.getPlayerTurnId()==2 &&
                 GamePlay.player1.getPlayerPawnMap().values().contains(targetCellNo)) {
             int key = getKey(GamePlay.player1.getPlayerPawnMap(), targetCellNo);
@@ -179,13 +181,18 @@ public class Board extends Table {
             Huds.scorePlayer1.setText(GamePlay.player1.getPlayerScore());
         }
     }
-    public Boolean isMoreThanOneColorPawnPresent(Players player){
-        Set<Integer> uniqueValues = new HashSet<Integer>(player.getPlayerPawnMap().values());
-      if(uniqueValues.size()<3)
-          return true;
+    public Boolean isMoreThanOneColorPawnPresent(Players player, int target){
+        int temp =0;
+        for (int i : player.getPlayerPawnMap().values()) {
+            if (i== target){
+                temp++;
+            }
+        }
+        if(temp>=2)
+            return true;
+        else
+            return false;
 
-      else
-          return false;
     }
     public <K, V> K getKey(Map<K, V> map, V value) {
         for (Map.Entry<K, V> entry : map.entrySet()) {

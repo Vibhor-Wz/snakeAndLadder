@@ -92,6 +92,7 @@ public class MainMenuScreen implements Screen {
         pixmap.setColor(Color.BLACK);
         pixmap.fill();
         Drawable drawable= new TextureRegionDrawable(new Texture(pixmap));
+        pixmap.dispose();
         return drawable;
     }
     public Drawable textFieldBg() {
@@ -99,6 +100,7 @@ public class MainMenuScreen implements Screen {
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
         Drawable drawable = new TextureRegionDrawable(new Texture(pixmap));
+        pixmap.dispose();
         return drawable;
     }
     public Drawable labelBg(){
@@ -106,6 +108,7 @@ public class MainMenuScreen implements Screen {
         pixmap.setColor(Color.valueOf("7E7E7E"));
         pixmap.fill();
         Drawable drawable = new TextureRegionDrawable(new Texture(pixmap));
+        pixmap.dispose();
         return drawable;
     }
     @Override

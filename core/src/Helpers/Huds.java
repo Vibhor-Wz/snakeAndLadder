@@ -4,18 +4,25 @@ import static com.project.snakeandladder.PawnAndPlayerType.BLUE;
 import static com.project.snakeandladder.PawnAndPlayerType.GREEN;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.project.snakeandladder.Board;
 import com.project.snakeandladder.GameMain;
+import com.project.snakeandladder.GamePlay;
 import com.project.snakeandladder.PawnAndPlayerType;
 import com.project.snakeandladder.Players;
 
@@ -35,6 +42,8 @@ public class Huds extends Table {
     public static Label scorePlayer2;
     public static Stack movePawnStack1;
     public static Stack movePawnStack2;
+    public static Table player2ScoreBoard;
+    public static Table player1ScoreBoard;
 
     public Huds(Board board,Players bluePawnPlayer,Players greenPawnPlayer, int player1Turn){
 
@@ -167,26 +176,30 @@ public class Huds extends Table {
 
 
     private Table getScoreBoardOfPlayer1(String playerName){
-        Table table= new Table();
+        player1ScoreBoard= new Table();
+        Pixmap pixmap= new Pixmap((int) (GameInfo.WIDTH*0.4f), (int) (GameInfo.HEIGHT*0.14f), Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.valueOf("#4C9A2A"));
+        pixmap.drawRectangle(1,1, (int) (GameInfo.WIDTH*0.38f), (int) (GameInfo.HEIGHT*0.12f));
+        player1ScoreBoard.background(new TextureRegionDrawable(new Texture(pixmap)));
+        pixmap.dispose();
+        player1ScoreBoard.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
 
-        table.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
+        player1ScoreBoard.add(getScoreDetailsOfPlayer1()).expandY().fill();
 
-            table.add(getScoreDetailsOfPlayer1()).top().expandY().fill();
-
-        return table;
+        return player1ScoreBoard;
     }
     private Table getScoreBoardOfPlayer2(String playerName){
-        Table table= new Table();
+        player2ScoreBoard= new Table();
 
-        table.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
+        player2ScoreBoard.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
 
-        table.add(getScoreDetailsOfPlayer2()).top().expandY().fill();
+        player2ScoreBoard.add(getScoreDetailsOfPlayer2()).expandY().fill();
 
-        return table;
+        return player2ScoreBoard;
     }
     private Table getScoreDetailsOfPlayer1(){
-        Table table = new Table();
-        table.top();
+        final Table table = new Table();
+
         Table infoPlayer1= new Table();
         Image infoImg= new Image(new Texture("info.png"));
         infoPlayer1.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
@@ -198,11 +211,17 @@ public class Huds extends Table {
 
         Label scoreTxt = new Label("SCORE",getLabelStyle(Color.SKY, GameInfo.WIDTH*0.023f));
         table.add(scoreTxt);
+        infoPlayer1.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+
+            }
+        });
         return table;
     }
     private Table getScoreDetailsOfPlayer2(){
         Table table = new Table();
-        table.top();
+
         Table infoPlayer2= new Table();
         Image infoImg= new Image(new Texture("info.png"));
         infoPlayer2.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
@@ -214,6 +233,12 @@ public class Huds extends Table {
 
         Label scoreTxt = new Label("SCORE",getLabelStyle(Color.SKY, GameInfo.WIDTH*0.023f));
         table.add(scoreTxt);
+        infoPlayer2.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+
+            }
+        });
         return table;
     }
     private Table getPlayerNameAndPicture(String playerName){
@@ -243,5 +268,6 @@ public class Huds extends Table {
 
         return style;
     }
+
 
 }
