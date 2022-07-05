@@ -28,12 +28,12 @@ public class GamePlay implements Screen {
     public static Players player2;
 
 
-    public GamePlay(GameMain game, Stage stage) {
+    public GamePlay(GameMain game, Stage stage, String player1Name,String player2Name ) {
         this.game=game;
 
         board = new Board();
-        player1 = new Players(game, "Vibhor", board, BLUE, 1);
-        player2 = new Players(game, "Jai", board, GREEN, 2);
+        player1 = new Players(game, player1Name, board, BLUE, 1);
+        player2 = new Players(game, player2Name, board, GREEN, 2);
 
 
         final Table container = new Table();

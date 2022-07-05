@@ -37,7 +37,7 @@ public class GameMain extends Game{
 		stage= new Stage();
 
 		playerTurn = 1;
-		setScreen(new GamePlay(this,stage));
+		setScreen(new MainMenuScreen(stage,this));
 		Gdx.input.setInputProcessor(stage);
 	}
 

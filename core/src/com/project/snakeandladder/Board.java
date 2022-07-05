@@ -132,7 +132,7 @@ public class Board extends Table {
         ifAnotherPlayerPawnPresent(p, targetCellNo);
     }
     void ifAnotherPlayerPawnPresent(Players player,int targetCellNo){
-        if(!isMoreThanOneColorPawnPresent(GamePlay.player2,targetCellNo) &&
+        if(!isMoreThanOneColorPawnPresent(GamePlay.player2) &&
                 player.getPlayerTurnId()==1 &&
                 GamePlay.player2.getPlayerPawnMap().values().contains(targetCellNo)){
 
@@ -156,7 +156,7 @@ public class Board extends Table {
             Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
 
         }
-        else if(!isMoreThanOneColorPawnPresent(GamePlay.player1,targetCellNo) &&
+        else if(!isMoreThanOneColorPawnPresent(GamePlay.player1) &&
                 player.getPlayerTurnId()==2 &&
                 GamePlay.player1.getPlayerPawnMap().values().contains(targetCellNo)) {
             int key = getKey(GamePlay.player1.getPlayerPawnMap(), targetCellNo);
@@ -179,7 +179,7 @@ public class Board extends Table {
             Huds.scorePlayer1.setText(GamePlay.player1.getPlayerScore());
         }
     }
-    public Boolean isMoreThanOneColorPawnPresent(Players player,int targetCellNo){
+    public Boolean isMoreThanOneColorPawnPresent(Players player){
         Set<Integer> uniqueValues = new HashSet<Integer>(player.getPlayerPawnMap().values());
       if(uniqueValues.size()<3)
           return true;

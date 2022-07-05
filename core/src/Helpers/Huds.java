@@ -37,6 +37,7 @@ public class Huds extends Table {
     public static Stack movePawnStack2;
 
     public Huds(Board board,Players bluePawnPlayer,Players greenPawnPlayer, int player1Turn){
+
         this.player1Turn=player1Turn;
         this.bluePawnPlayer = bluePawnPlayer;
         this.greenPawnPlayer =greenPawnPlayer;
