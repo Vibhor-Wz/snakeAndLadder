@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -51,6 +52,7 @@ public class Board extends Table {
 
 
     public Board(GamePlay gamePlay) {
+
         this.gamePlay=gamePlay;
         cells = new Cell[100];
         setWidth(GameInfo.WIDTH);
@@ -70,73 +72,87 @@ public class Board extends Table {
     }
 
     public void movePawnTo(final int targetCellNo, final Pawns pawn,
-                           int previousCellNo, Players p, int pawnId) {
+                           int previousCellNo, final Players p, final int pawnId) {
 
         if(targetCellNo>previousCellNo && targetCellNo <= 100) {
 
              for (int i = previousCellNo-1; i <targetCellNo-1;i++) {
 
                      Cell targetCell = cells[i + 1];
+                     Vector2 tmp= new Vector2();
+                     targetCell.getActor().localToActorCoordinates(this,tmp);
 
-                 Stack stack = null;
-                 if (targetCell.getActor() != null) {
-                     stack = (Stack) targetCell.getActor();
-                     pawn.setPosition(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY());
+                     if(p.getPlayerPawnMap().containsValue(targetCellNo)){
+//                         pawn.addAction();
+                         pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.35f,tmp.y,0.2f, Interpolation.linear));
+                     }
+                     else
 
-                 }
+                         pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.4f,tmp.y,0.2f, Interpolation.linear));
+
 
                  addActor(pawn);
 
              }
             pawn.setPositionOnBoard(targetCellNo);
+            p.updatePlayerPawn(pawnId,pawn.getPosition());
+            p.updatePlayerScore();
         }
-
+        final Board b=this;
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 if(ladderStartPos.contains(targetCellNo-1,true)){
 
                     Cell targetCell =cells[ladderCoordinates.get(targetCellNo-1)];
-                    Stack stack = null;
-                    if (targetCell.getActor() != null) {
-                        stack = (Stack) targetCell.getActor();
-                        pawn.setPosition(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY());
-                    }
+                    Vector2 tmp= new Vector2();
+                    targetCell.getActor().localToActorCoordinates(b,tmp);
+
+                        if(p.getPlayerPawnMap().containsValue(targetCellNo)){
+                            pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.35f,tmp.y,0.2f, Interpolation.linear));
+                        }
+                        else
+                            pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.4f,tmp.y,0.2f, Interpolation.linear));
 
                     addActor(pawn);
                     pawn.setPositionOnBoard(ladderCoordinates.get(targetCellNo-1)+1);
-
+                    p.updatePlayerPawn(pawnId,pawn.getPosition());
+                    p.updatePlayerScore();
 
                 }
                 if(snakeEndPos.contains(targetCellNo-1,true)){
 
                     Cell targetCell =cells[snakeCoordinates.get(targetCellNo-1)];
-                    Stack stack = null;
-                    if (targetCell.getActor() != null) {
-                        stack = (Stack) targetCell.getActor();
-                        pawn.setPosition(stack.getX()+pawn.getMinWidth()*0.4f,stack.getY());
-                    }
+                    Vector2 tmp= new Vector2();
+                    targetCell.getActor().localToActorCoordinates(b,tmp);
+                        if(p.getPlayerPawnMap().containsValue(targetCellNo)){
+                            pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.35f,tmp.y,0.2f, Interpolation.linear));
+                        }
+                        else
+                            pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.4f,tmp.y,0.2f, Interpolation.linear));
+
 
                     addActor(pawn);
                     pawn.setPositionOnBoard(snakeCoordinates.get(targetCellNo-1)+1);
+                    p.updatePlayerPawn(pawnId,pawn.getPosition());
+                    p.updatePlayerScore();
                 }
+                p.updatePlayerPawn(pawnId,pawn.getPosition());
+                p.updatePlayerScore();
+                if(p.getPlayerType().equals(PawnAndPlayerType.BLUE))
+                    Huds.scorePlayer1.setText(p.getPlayerScore());
+                else
+                    Huds.scorePlayer2.setText(p.getPlayerScore());
             }
         },0.4f);
 
-
-        p.updatePlayerPawn(pawnId,pawn.getPosition());
-        p.updatePlayerScore();
-        if(p.getPlayerType().equals(PawnAndPlayerType.BLUE))
-             Huds.scorePlayer1.setText(p.getPlayerScore());
-        else
-            Huds.scorePlayer2.setText(p.getPlayerScore());
 
         ifAnotherPlayerPawnPresent(p, targetCellNo);
     }
     void ifAnotherPlayerPawnPresent(Players player,int targetCellNo){
         if(!isMoreThanOneColorPawnPresent(GamePlay.player2,targetCellNo) &&
                 player.getPlayerTurnId()==1 &&
-                GamePlay.player2.getPlayerPawnMap().values().contains(targetCellNo)){
+                GamePlay.player2.getPlayerPawnMap().values().contains(targetCellNo) && targetCellNo!=100){
 
             int key = getKey(GamePlay.player2.getPlayerPawnMap(), targetCellNo);
             if(key==1){
@@ -144,11 +160,11 @@ public class Board extends Table {
                 GamePlay.player2.pawns[0].setPositionOnBoard(0);
             }
             else if(key==2){
-                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[1]);
+                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[1]).padLeft(-GameInfo.WIDTH * 0.025f);
                 GamePlay.player2.pawns[1].setPositionOnBoard(0);
             }
             else{
-                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[2]);
+                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[2]).padLeft(-GameInfo.WIDTH * 0.025f);
                 GamePlay.player2.pawns[2].setPositionOnBoard(0);
             }
 
@@ -160,18 +176,19 @@ public class Board extends Table {
         }
         else if(!isMoreThanOneColorPawnPresent(GamePlay.player1,targetCellNo) &&
                 player.getPlayerTurnId()==2 &&
-                GamePlay.player1.getPlayerPawnMap().values().contains(targetCellNo)) {
+                GamePlay.player1.getPlayerPawnMap().values().contains(targetCellNo) && targetCellNo !=100) {
             int key = getKey(GamePlay.player1.getPlayerPawnMap(), targetCellNo);
             if(key==1){
                 Huds.pawnBlueTbl.add(GamePlay.player1.pawns[0]);
                 GamePlay.player1.pawns[0].setPositionOnBoard(0);
+
             }
             else if(key==2){
-                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[1]);
+                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[1]).padLeft(-GameInfo.WIDTH * 0.025f);
                 GamePlay.player1.pawns[1].setPositionOnBoard(0);
             }
             else{
-                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[2]);
+                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[2]).padLeft(-GameInfo.WIDTH * 0.025f);
                 GamePlay.player1.pawns[2].setPositionOnBoard(0);
             }
 
@@ -252,7 +269,6 @@ public class Board extends Table {
                 } else {
                     t--;
                 }
-//
             }
             if (i % 2 == 0) {
                 t--;
@@ -293,10 +309,8 @@ public class Board extends Table {
 
     private Array<Table> createLadder(int laddersNumber) {
         Array<Table> a = new Array<>(laddersNumber);
-//        getStartAndEndOfLadders(laddersNumber);
         ladderPosition();
         for (int i = 0; i < laddersNumber; i++) {
-            System.out.print("ladder index => " + ladderStartPos.get(i) + "->" + ladderEndPos.get(i));
 
             Stack stack = (Stack) cells[ladderStartPos.get(i)].getActor();
             Vector2 ladderStartPosition = new Vector2();

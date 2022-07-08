@@ -42,7 +42,7 @@ public class GamePlay implements Screen {
         player2 = new Players(game, player2Name, board, GREEN, 2);
 
 
-        final Table container = new Table();
+        Table container = new Table();
         container.background(bg());
         container.setSize(GameInfo.WIDTH,GameInfo.HEIGHT);
 
