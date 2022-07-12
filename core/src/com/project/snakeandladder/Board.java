@@ -15,24 +15,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
-
-
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
 import Helpers.Font;
 import Helpers.GameInfo;
 import Helpers.Huds;
 
 public class Board extends Table {
+
 
     Table table;
     private Cell[] cells;
@@ -53,6 +50,7 @@ public class Board extends Table {
 
     public Board(GamePlay gamePlay) {
 
+
         this.gamePlay=gamePlay;
         cells = new Cell[100];
         setWidth(GameInfo.WIDTH);
@@ -72,7 +70,7 @@ public class Board extends Table {
     }
 
     public void movePawnTo(final int targetCellNo, final Pawns pawn,
-                           int previousCellNo, final Players p, final int pawnId) {
+                           int previousCellNo, final Players p) {
 
         if(targetCellNo>previousCellNo && targetCellNo <= 100) {
 
@@ -83,72 +81,109 @@ public class Board extends Table {
                      targetCell.getActor().localToActorCoordinates(this,tmp);
 
                      if(p.getPlayerPawnMap().containsValue(targetCellNo)){
-//                         pawn.addAction();
-                         pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.35f,tmp.y,0.2f, Interpolation.linear));
+
+                         pawn.addAction(Actions.moveTo(tmp.x+GameInfo.WIDTH * 0.015f,tmp.y,0.2f, Interpolation.linear));
+
                      }
-                     else
+                     else {
+                         pawn.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f, tmp.y, 0.2f, Interpolation.linear));
 
-                         pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.4f,tmp.y,0.2f, Interpolation.linear));
-
-
+                     }
+                 if(p.getPlayerTurnId()==1){
+                     Huds.pawnBlueTbl.removeActor(pawn);
+                 }
+                 else{
+                     Huds.pawnGreenTbl.removeActor(pawn);
+                 }
                  addActor(pawn);
 
              }
             pawn.setPositionOnBoard(targetCellNo);
-            p.updatePlayerPawn(pawnId,pawn.getPosition());
+            p.updatePlayerPawn(pawn.getPawnId(),pawn.getPosition());
             p.updatePlayerScore();
         }
         final Board b=this;
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
+                boolean isSnakeBite=false;
+                boolean isLadderClimbed=false;
                 if(ladderStartPos.contains(targetCellNo-1,true)){
-
+                    isLadderClimbed=true;
                     Cell targetCell =cells[ladderCoordinates.get(targetCellNo-1)];
                     Vector2 tmp= new Vector2();
                     targetCell.getActor().localToActorCoordinates(b,tmp);
 
                         if(p.getPlayerPawnMap().containsValue(targetCellNo)){
-                            pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.35f,tmp.y,0.2f, Interpolation.linear));
-                        }
-                        else
-                            pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.4f,tmp.y,0.2f, Interpolation.linear));
+                            pawn.addAction(Actions.moveTo(tmp.x+GameInfo.WIDTH * 0.015f,tmp.y,0.2f, Interpolation.linear));
 
+                        }
+                        else{
+                            pawn.addAction(Actions.moveTo(tmp.x+GameInfo.WIDTH * 0.03f,tmp.y,0.2f, Interpolation.linear));
+
+                        }
+
+                    if(p.getPlayerTurnId()==1){
+                        Huds.pawnBlueTbl.removeActor(pawn);
+                    }
+                    else{
+                        Huds.pawnGreenTbl.removeActor(pawn);
+                    }
                     addActor(pawn);
                     pawn.setPositionOnBoard(ladderCoordinates.get(targetCellNo-1)+1);
-                    p.updatePlayerPawn(pawnId,pawn.getPosition());
+                    p.updatePlayerPawn(pawn.getPawnId(),pawn.getPosition());
                     p.updatePlayerScore();
+                    ifAnotherPlayerPawnPresent(p, ladderCoordinates.get(targetCellNo-1)+1);
 
                 }
                 if(snakeEndPos.contains(targetCellNo-1,true)){
-
+                    isSnakeBite = true;
                     Cell targetCell =cells[snakeCoordinates.get(targetCellNo-1)];
                     Vector2 tmp= new Vector2();
                     targetCell.getActor().localToActorCoordinates(b,tmp);
                         if(p.getPlayerPawnMap().containsValue(targetCellNo)){
-                            pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.35f,tmp.y,0.2f, Interpolation.linear));
+                            pawn.addAction(Actions.moveTo(tmp.x+GameInfo.WIDTH * 0.015f,tmp.y,0.2f, Interpolation.linear));
+
                         }
                         else
-                            pawn.addAction(Actions.moveTo(tmp.x+pawn.getMinWidth()*0.4f,tmp.y,0.2f, Interpolation.linear));
+                        {
+                            pawn.addAction(Actions.moveTo(tmp.x+GameInfo.WIDTH * 0.03f,tmp.y,0.2f, Interpolation.linear));
 
-
+                        }
+                    if(p.getPlayerTurnId()==1){
+                        Huds.pawnBlueTbl.removeActor(pawn);
+                    }
+                    else{
+                        Huds.pawnGreenTbl.removeActor(pawn);
+                    }
                     addActor(pawn);
                     pawn.setPositionOnBoard(snakeCoordinates.get(targetCellNo-1)+1);
-                    p.updatePlayerPawn(pawnId,pawn.getPosition());
+                    p.updatePlayerPawn(pawn.getPawnId(),pawn.getPosition());
                     p.updatePlayerScore();
+                    ifAnotherPlayerPawnPresent(p, snakeCoordinates.get(targetCellNo-1)+1);
                 }
-                p.updatePlayerPawn(pawnId,pawn.getPosition());
+
+                p.updatePlayerPawn(pawn.getPawnId(),pawn.getPosition());
                 p.updatePlayerScore();
                 if(p.getPlayerType().equals(PawnAndPlayerType.BLUE))
                     Huds.scorePlayer1.setText(p.getPlayerScore());
                 else
                     Huds.scorePlayer2.setText(p.getPlayerScore());
+                if(!isSnakeBite && !isLadderClimbed)
+                   ifAnotherPlayerPawnPresent(p, targetCellNo);
+//                if (p.getPlayerTurnId()==1){
+//                    for(Pawns t :GamePlay.player2.pawns )
+//                        addActor(t);
+//                }
+//                else{
+//                    for(Pawns t1 :GamePlay.player1.pawns )
+//                        addActor(t1);
+//                }
+
             }
         },0.4f);
-
-
-        ifAnotherPlayerPawnPresent(p, targetCellNo);
     }
+
     void ifAnotherPlayerPawnPresent(Players player,int targetCellNo){
         if(!isMoreThanOneColorPawnPresent(GamePlay.player2,targetCellNo) &&
                 player.getPlayerTurnId()==1 &&
@@ -156,15 +191,15 @@ public class Board extends Table {
 
             int key = getKey(GamePlay.player2.getPlayerPawnMap(), targetCellNo);
             if(key==1){
-                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[0]);
+                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[0]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);;
                 GamePlay.player2.pawns[0].setPositionOnBoard(0);
             }
             else if(key==2){
-                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[1]).padLeft(-GameInfo.WIDTH * 0.025f);
+                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[1]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
                 GamePlay.player2.pawns[1].setPositionOnBoard(0);
             }
             else{
-                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[2]).padLeft(-GameInfo.WIDTH * 0.025f);
+                Huds.pawnGreenTbl.add(GamePlay.player2.pawns[2]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
                 GamePlay.player2.pawns[2].setPositionOnBoard(0);
             }
 
@@ -172,6 +207,14 @@ public class Board extends Table {
             GamePlay.player2.updatePlayerPawn(key,0);
             GamePlay.player2.updatePlayerScore();
             Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
+            player.game.changePlayerTurn();
+            Huds.movePawnStack2.setVisible(false);
+            Huds.movePawnStack1.setVisible(true);
+            Drawable d = Huds.player2ScoreBoard.getBackground();
+            Huds.player1ScoreBoard.setBackground(d);
+            d = null;
+            Huds.player2ScoreBoard.setBackground(d);
+
 
         }
         else if(!isMoreThanOneColorPawnPresent(GamePlay.player1,targetCellNo) &&
@@ -179,16 +222,16 @@ public class Board extends Table {
                 GamePlay.player1.getPlayerPawnMap().values().contains(targetCellNo) && targetCellNo !=100) {
             int key = getKey(GamePlay.player1.getPlayerPawnMap(), targetCellNo);
             if(key==1){
-                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[0]);
+                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[0]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);;
                 GamePlay.player1.pawns[0].setPositionOnBoard(0);
 
             }
             else if(key==2){
-                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[1]).padLeft(-GameInfo.WIDTH * 0.025f);
+                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[1]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
                 GamePlay.player1.pawns[1].setPositionOnBoard(0);
             }
             else{
-                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[2]).padLeft(-GameInfo.WIDTH * 0.025f);
+                Huds.pawnBlueTbl.add(GamePlay.player1.pawns[2]).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f).padLeft(-GameInfo.WIDTH * 0.025f);
                 GamePlay.player1.pawns[2].setPositionOnBoard(0);
             }
 
@@ -196,6 +239,13 @@ public class Board extends Table {
             GamePlay.player1.updatePlayerPawn(key,0);
             GamePlay.player1.updatePlayerScore();
             Huds.scorePlayer1.setText(GamePlay.player1.getPlayerScore());
+            player.game.changePlayerTurn();
+            Huds.movePawnStack2.setVisible(true);
+            Huds.movePawnStack1.setVisible(false);
+            Drawable d = Huds.player1ScoreBoard.getBackground();
+            Huds.player2ScoreBoard.setBackground(d);
+            d = null;
+            Huds.player1ScoreBoard.setBackground(d);
         }
     }
     public Boolean isMoreThanOneColorPawnPresent(Players player, int target){
@@ -205,10 +255,7 @@ public class Board extends Table {
                 temp++;
             }
         }
-        if(temp>=2)
-            return true;
-        else
-            return false;
+        return temp >= 2;
 
     }
     public <K, V> K getKey(Map<K, V> map, V value) {

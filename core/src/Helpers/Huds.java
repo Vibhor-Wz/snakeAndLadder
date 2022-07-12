@@ -81,14 +81,14 @@ public class Huds extends Table {
         Table table= new Table();
         table.add(getPawnAndDiceRollTbl(pawnColor));
         if(playerTurn ==1) {
-            table.add(getMovePawnLblTable()).padLeft(-GameInfo.WIDTH * 0.04f);
+            table.add(getMovePawnLblTable1())/*.padLeft(-GameInfo.WIDTH * 0.03f)*/;
         }
         else
-            table.add(getMovePawnLblTable2()).padLeft(-GameInfo.WIDTH * 0.04f);
+            table.add(getMovePawnLblTable2())/*.padLeft(-GameInfo.WIDTH * 0.03f)*/;
         return table;
     }
-    private Table getMovePawnLblTable(){
-        Table table= new Table();
+    private Stack getMovePawnLblTable1(){
+
         Table movePawnTbl=new Table();
         movePawnStack1 = new Stack();
 
@@ -107,13 +107,9 @@ public class Huds extends Table {
         movePawnStack1.add(movePawnTbl);
 
 
-        table.add(movePawnStack1);
-
-
-        return table;
+        return movePawnStack1;
     }
-    private Table getMovePawnLblTable2(){
-        Table table= new Table();
+    private Stack getMovePawnLblTable2(){
         Table movePawnTbl=new Table();
 
         movePawnStack2= new Stack();
@@ -132,9 +128,7 @@ public class Huds extends Table {
 
         movePawnStack2.add(movePawnTbl);
         movePawnStack2.setVisible(false);
-        table.add(movePawnStack2);
-
-        return table;
+        return movePawnStack2;
     }
     private Table getPawnAndDiceRollTbl(PawnAndPlayerType pawnColor){
         Table table= new Table();
@@ -167,9 +161,6 @@ public class Huds extends Table {
                 diceRollPlayer2 = new Label("",getLabelStyle(Color.WHITE,GameInfo.WIDTH*0.03f));
                 table.add(diceRollPlayer2);
             }
-
-
-
 
         return table;
     }

@@ -15,12 +15,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import java.util.Random;
 
 import Helpers.GameInfo;
 import Helpers.Huds;
 
 public class GamePlay implements Screen {
+
+    public Stage getStage() {
+        return stage;
+    }
 
     private Stage stage;
     private Board board;
@@ -88,10 +91,12 @@ public class GamePlay implements Screen {
 
         stage.act();
         stage.draw();
+
         if(!board.isLadderInitialized())
             board.initLadder();
         if (!board.isSnakeInitialized())
             board.initSnake();
+
     }
 
     @Override

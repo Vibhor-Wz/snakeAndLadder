@@ -2,12 +2,9 @@ package com.project.snakeandladder;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 
-import Helpers.GameInfo;
-
-public class Pawns extends Table{
+public class Pawns extends Image{
 
 
     private int position;
@@ -20,11 +17,10 @@ public class Pawns extends Table{
 
 
     public Pawns(PawnAndPlayerType pawnType, int pawnId){
-
+        super(new Texture("SnakeAndLadder/"+pawnType+".png"));
         this.pawnId=pawnId;
-        Image pawnImg = new Image(new Texture("SnakeAndLadder/"+pawnType+".png"));
-        add(pawnImg).width(GameInfo.WIDTH * 0.05f).height(GameInfo.HEIGHT * 0.05185f);
-        align(Align.center);
+        setAlign(Align.center);
+
         this.position= 0;
         this.pawnType = pawnType;
 
