@@ -58,6 +58,7 @@ public class GameMain extends Game{
 	private void rollDice(){
 		Random random= new Random();
 		roll= random.nextInt(6)+1;
+//		roll=1;
 	}
 
 	public void changePlayerTurn(){

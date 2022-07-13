@@ -35,14 +35,15 @@ public class MainMenuScreen implements Screen {
         this.stage=stage;
         this.game=game;
         container= new Table();
-        mainMenuBg= new TextureRegionDrawable(new Texture("MainMenuBg.jpeg"));
+        mainMenuBg= new TextureRegionDrawable(new Texture("MainMenuBg.jpg"));
         TextField.TextFieldStyle style= new TextField.TextFieldStyle();
         style.font= Huds.getNormalFont(GameInfo.WIDTH*0.028f);
-        style.fontColor= Color.BLACK;
+        style.fontColor= Color.valueOf("#A9A9A9");
         style.cursor=cursor();
         style.background=textFieldBg();
 
-        player1Name= new TextField("", style);
+        player1Name= new TextField("Player 1", style);
+        player1Name.setMaxLength(12);
         player1Name.setTextFieldFilter(new TextField.TextFieldFilter() {
             @SuppressWarnings("NewApi")
             @Override
@@ -50,7 +51,9 @@ public class MainMenuScreen implements Screen {
                 return Character.isAlphabetic(c);
             }
         });
-        player2Name = new TextField("", style);
+
+        player2Name = new TextField("Player 2", style);
+        player2Name.setMaxLength(12);
         player2Name.setTextFieldFilter(new TextField.TextFieldFilter() {
             @SuppressWarnings("NewApi")
             @Override
@@ -60,7 +63,7 @@ public class MainMenuScreen implements Screen {
         });
         Label.LabelStyle style1= new Label.LabelStyle();
         style1.font=Huds.getNormalFont(GameInfo.WIDTH*0.028f);
-        style1.fontColor=Color.valueOf("347C2C");
+        style1.fontColor=Color.valueOf("#EEEBE8");
         style1.background=labelBg();
         player1= new Label("Player1 Name",style1);
         player1.setAlignment(Align.center);
@@ -81,7 +84,9 @@ public class MainMenuScreen implements Screen {
         playButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GamePlay(game,stage, player1Name.getText(),player2Name.getText()));
+
+                    game.setScreen(new GamePlay(game, stage, player1Name.getText(), player2Name.getText()));
+
             }
         });
         container.setFillParent(true);
@@ -89,7 +94,7 @@ public class MainMenuScreen implements Screen {
     }
     public Drawable cursor(){
         Pixmap pixmap= new Pixmap(2,2, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.BLACK);
+        pixmap.setColor(Color.valueOf("#A9A9A9"));
         pixmap.fill();
         Drawable drawable= new TextureRegionDrawable(new Texture(pixmap));
         pixmap.dispose();

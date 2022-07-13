@@ -1,12 +1,13 @@
 package com.project.snakeandladder;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.model.Animation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.project.snakeandladder.gameover.GameOverDialog;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -68,7 +69,6 @@ public class Players{
 
                 int previousPos = pawns[0].getPosition();
                 if (previousPos + game.getRoll() <= 100) {
-//                pawns[0].updatePosition(roll);
                     if (playerTurnId == game.getPlayerTurn() && previousPos != 100) {
                         board.movePawnTo(previousPos + game.getRoll(), pawns[0], previousPos, p);
                         game.changePlayerTurn();
@@ -79,6 +79,9 @@ public class Players{
                             Huds.player2ScoreBoard.setBackground(d);
                             d = null;
                             Huds.player1ScoreBoard.setBackground(d);
+                            for (Pawns p : Huds.greenPawnPlayer.pawns) {
+                                p.toFront();
+                            }
                             if (GameMain.movesLeft > 0) {
                                 GameMain.movesLeft--;
                                 Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
@@ -88,27 +91,12 @@ public class Players{
                                 windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                                 windowStyle.titleFontColor = Color.BLACK;
                                 if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-
-                                    Dialog dialog = new Dialog("", windowStyle);
-                                    dialog.getTitleTable().add(new Label("Score Board",
-                                            dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                    dialog.getContentTable().add(new Label
-                                            (Huds.bluePawnPlayer.name + " Won With Score "
-                                                    + Huds.bluePawnPlayer.playerScore, new Label.LabelStyle
-                                                    (Huds.getNormalFont
-                                                            (GameInfo.WIDTH * 0.05f), Color.BLACK)));
-                                    dialog.show(GameMain.stage);
+                                    new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name,Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+//
                                 } else {
 
-                                    Dialog dialog = new Dialog("", windowStyle);
-                                    dialog.getTitleTable().add(new Label("Score Board",
-                                            dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                    dialog.getContentTable().add(new Label
-                                            (Huds.greenPawnPlayer.name + " Won With Score " +
-                                                    Huds.greenPawnPlayer.playerScore, new Label.LabelStyle
-                                                    (Huds.getNormalFont
-                                                            (GameInfo.WIDTH * 0.05f), Color.BLACK)));
-                                    dialog.show(GameMain.stage);
+                                    new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name,Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+//
                                 }
 
                             }
@@ -119,6 +107,9 @@ public class Players{
                             Huds.player1ScoreBoard.setBackground(d);
                             d = null;
                             Huds.player2ScoreBoard.setBackground(d);
+                            for (Pawns p : Huds.bluePawnPlayer.pawns) {
+                                p.toFront();
+                            }
                         }
 
                     } else {
@@ -132,14 +123,8 @@ public class Players{
                         windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                         windowStyle.titleFontColor = Color.BLACK;
 
-                        Dialog dialog = new Dialog("", windowStyle);
-                        dialog.getTitleTable().add(new Label("Score Board",
-                                dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                        dialog.getContentTable().add(new Label
-                                (p.name + " Won With Score " + p.playerScore, new Label.LabelStyle
-                                        (Huds.getNormalFont
-                                                (GameInfo.WIDTH * 0.05f), Color.BLACK)));
-                        dialog.show(GameMain.stage);
+                        new GameOverDialog("Score Board",windowStyle,p.name,p.playerScore).show(GameMain.stage);
+//
                     }
                 }
                 else if(pawns[0].getPosition()+game.getRoll()>100 &&
@@ -153,6 +138,9 @@ public class Players{
                         Huds.player2ScoreBoard.setBackground(d);
                         d = null;
                         Huds.player1ScoreBoard.setBackground(d);
+                        for (Pawns p : Huds.greenPawnPlayer.pawns) {
+                            p.toFront();
+                        }
                         if (GameMain.movesLeft > 0) {
                             GameMain.movesLeft--;
                             Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
@@ -162,27 +150,11 @@ public class Players{
                             windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                             windowStyle.titleFontColor = Color.BLACK;
                             if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-
-                                Dialog dialog = new Dialog("", windowStyle);
-                                dialog.getTitleTable().add(new Label("Score Board",
-                                        dialog.getTitleLabel().getStyle())).center().expand();
-                                dialog.getContentTable().add(new Label
-                                        (Huds.bluePawnPlayer.name + " Won With Score "
-                                                + Huds.bluePawnPlayer.playerScore, new Label.LabelStyle
-                                                (Huds.getNormalFont
-                                                        (GameInfo.WIDTH * 0.01f), Color.BLACK)));
-                                dialog.show(GameMain.stage);
+                                new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name,Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+//
                             } else {
-
-                                Dialog dialog = new Dialog("", windowStyle);
-                                dialog.getTitleTable().add(new Label("Score Board",
-                                        dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                dialog.getContentTable().add(new Label
-                                        (Huds.greenPawnPlayer.name + " Won With Score " +
-                                                Huds.greenPawnPlayer.playerScore, new Label.LabelStyle
-                                                (Huds.getNormalFont
-                                                        (GameInfo.WIDTH * 0.05f), Color.BLACK)));
-                                dialog.show(GameMain.stage);
+                                new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+//
                             }
 
                         }
@@ -193,6 +165,9 @@ public class Players{
                         Huds.player1ScoreBoard.setBackground(d);
                         d = null;
                         Huds.player2ScoreBoard.setBackground(d);
+                        for (Pawns p : Huds.bluePawnPlayer.pawns) {
+                            p.toFront();
+                        }
                     }
             }
 
@@ -203,7 +178,6 @@ public class Players{
             public void clicked(InputEvent event, float x, float y) {
 
                 int previousPos = pawns[1].getPosition();
-//                pawns[1].updatePosition(roll);
                 if (previousPos + game.getRoll() <= 100) {
                     if (playerTurnId == game.getPlayerTurn() && previousPos != 100) {
                         board.movePawnTo(previousPos + game.getRoll(), pawns[1], previousPos, p);
@@ -215,6 +189,9 @@ public class Players{
                             Huds.player2ScoreBoard.setBackground(d);
                             d = null;
                             Huds.player1ScoreBoard.setBackground(d);
+                            for (Pawns p : Huds.greenPawnPlayer.pawns) {
+                                p.toFront();
+                            }
                             if (GameMain.movesLeft > 0) {
                                 GameMain.movesLeft--;
                                 Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
@@ -224,23 +201,11 @@ public class Players{
                                 windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                                 windowStyle.titleFontColor = Color.BLACK;
                                 if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-
-                                    Dialog dialog= new Dialog("",windowStyle);
-                                    dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                    dialog.getContentTable().add(new Label
-                                            (Huds.bluePawnPlayer.name + " Won With Score " + Huds.bluePawnPlayer.playerScore
-                                                    , new Label.LabelStyle(Huds.getNormalFont
-                                                            (GameInfo.WIDTH * 0.05f),Color.BLACK)));
-                                    dialog.show(GameMain.stage);
+                                    new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+//
                                 } else {
-
-                                    Dialog dialog= new Dialog("",windowStyle);
-                                    dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                    dialog.getContentTable().add(new Label
-                                            (Huds.greenPawnPlayer.name + " Won With Score " + Huds.greenPawnPlayer.playerScore
-                                                    , new Label.LabelStyle(Huds.getNormalFont
-                                                    (GameInfo.WIDTH * 0.05f),Color.BLACK)));
-                                    dialog.show(GameMain.stage);
+                                    new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+//
                                 }
                             }
                         } else {
@@ -250,6 +215,9 @@ public class Players{
                             Huds.player1ScoreBoard.setBackground(d);
                             d = null;
                             Huds.player2ScoreBoard.setBackground(d);
+                            for (Pawns p : Huds.bluePawnPlayer.pawns) {
+                                p.toFront();
+                            }
                         }
                     } else {
                         System.out.println("Please wait for your turn");
@@ -261,14 +229,8 @@ public class Players{
                         Window.WindowStyle windowStyle = new Window.WindowStyle();
                         windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                         windowStyle.titleFontColor = Color.BLACK;
-
-                        Dialog dialog= new Dialog("",windowStyle);
-                        dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                        dialog.getContentTable().add(new Label
-                                (p.name + " Won With Score " + p.playerScore, new Label.LabelStyle
-                                        (Huds.getNormalFont
-                                                (GameInfo.WIDTH * 0.05f),Color.BLACK)));
-                        dialog.show(GameMain.stage);
+                        new GameOverDialog("Score Board",windowStyle,p.name, p.playerScore).show(GameMain.stage);
+//
                     }
                 }
                 else if(pawns[0].getPosition()+game.getRoll()>100 &&
@@ -282,6 +244,9 @@ public class Players{
                         Huds.player2ScoreBoard.setBackground(d);
                         d = null;
                         Huds.player1ScoreBoard.setBackground(d);
+                        for (Pawns p : Huds.greenPawnPlayer.pawns) {
+                            p.toFront();
+                        }
                         if (GameMain.movesLeft > 0) {
                             GameMain.movesLeft--;
                             Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
@@ -291,23 +256,11 @@ public class Players{
                             windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                             windowStyle.titleFontColor = Color.BLACK;
                             if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
+                                new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
 
-                                Dialog dialog= new Dialog("",windowStyle);
-                                dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                dialog.getContentTable().add(new Label
-                                        (Huds.bluePawnPlayer.name + " Won With Score " + Huds.bluePawnPlayer.playerScore
-                                                , new Label.LabelStyle(Huds.getNormalFont
-                                                (GameInfo.WIDTH * 0.05f),Color.BLACK)));
-                                dialog.show(GameMain.stage);
                             } else {
+                                new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
 
-                                Dialog dialog= new Dialog("",windowStyle);
-                                dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                dialog.getContentTable().add(new Label
-                                        (Huds.greenPawnPlayer.name + " Won With Score " + Huds.greenPawnPlayer.playerScore
-                                                , new Label.LabelStyle(Huds.getNormalFont
-                                                (GameInfo.WIDTH * 0.05f),Color.BLACK)));
-                                dialog.show(GameMain.stage);
                             }
                         }
                     } else {
@@ -317,6 +270,9 @@ public class Players{
                         Huds.player1ScoreBoard.setBackground(d);
                         d = null;
                         Huds.player2ScoreBoard.setBackground(d);
+                        for (Pawns p : Huds.bluePawnPlayer.pawns) {
+                            p.toFront();
+                        }
                     }
                 }
             }
@@ -338,33 +294,25 @@ public class Players{
                             Huds.player2ScoreBoard.setBackground(d);
                             d = null;
                             Huds.player1ScoreBoard.setBackground(d);
+                            for (Pawns p : Huds.greenPawnPlayer.pawns) {
+                                p.toFront();
+                            }
                             if (GameMain.movesLeft > 0) {
                                 GameMain.movesLeft--;
                                 Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
                             } else {
-                                GameMain.movesLeft--;
+
                                 Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
                                 System.out.print("GameOver");
                                 Window.WindowStyle windowStyle = new Window.WindowStyle();
                                 windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                                 windowStyle.titleFontColor = Color.BLACK;
                                 if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-                                    Dialog dialog= new Dialog("",windowStyle);
-                                    dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                    dialog.getContentTable().add(new Label
-                                            (Huds.bluePawnPlayer.name + " Won With Score " + Huds.bluePawnPlayer.playerScore
-                                                    , new Label.LabelStyle(Huds.getNormalFont
-                                                    (GameInfo.WIDTH * 0.05f),Color.BLACK)));
-                                    dialog.show(GameMain.stage);
-                                } else {
+                                    new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
 
-                                    Dialog dialog= new Dialog("",windowStyle);
-                                    dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                    dialog.getContentTable().add(new Label
-                                            (Huds.greenPawnPlayer.name + " Won With Score " + Huds.greenPawnPlayer.playerScore
-                                                    , new Label.LabelStyle(Huds.getNormalFont
-                                                            (GameInfo.WIDTH * 0.05f),Color.BLACK)));
-                                    dialog.show(GameMain.stage);
+                                } else {
+                                    new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+
                                 }
                             }
                         } else {
@@ -374,6 +322,9 @@ public class Players{
                             Huds.player1ScoreBoard.setBackground(d);
                             d = null;
                             Huds.player2ScoreBoard.setBackground(d);
+                            for (Pawns p : Huds.bluePawnPlayer.pawns) {
+                                p.toFront();
+                            }
 
                         }
                     } else {
@@ -387,14 +338,8 @@ public class Players{
                         windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                         windowStyle.titleFontColor = Color.BLACK;
 
-
-                        Dialog dialog= new Dialog("",windowStyle);
-                        dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                        dialog.getContentTable().add(new Label
-                                (p.name + " Won With Score " + p.playerScore
-                                        , new Label.LabelStyle(Huds.getNormalFont(GameInfo.WIDTH * 0.05f)
-                                        ,Color.BLACK)));
-                        dialog.show(GameMain.stage);
+                        new GameOverDialog("Score Board",windowStyle,p.name, p.playerScore).show(GameMain.stage);
+//
                     }
                 }
                 else if(pawns[0].getPosition()+game.getRoll()>100 &&
@@ -408,33 +353,25 @@ public class Players{
                         Huds.player2ScoreBoard.setBackground(d);
                         d = null;
                         Huds.player1ScoreBoard.setBackground(d);
+                        for (Pawns p : Huds.greenPawnPlayer.pawns) {
+                            p.toFront();
+                        }
                         if (GameMain.movesLeft > 0) {
                             GameMain.movesLeft--;
                             Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
                         } else {
-                            GameMain.movesLeft--;
+//                            GameMain.movesLeft--;
                             Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
                             System.out.print("GameOver");
                             Window.WindowStyle windowStyle = new Window.WindowStyle();
                             windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                             windowStyle.titleFontColor = Color.BLACK;
                             if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-                                Dialog dialog= new Dialog("",windowStyle);
-                                dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                dialog.getContentTable().add(new Label
-                                        (Huds.bluePawnPlayer.name + " Won With Score " + Huds.bluePawnPlayer.playerScore
-                                                , new Label.LabelStyle(Huds.getNormalFont
-                                                (GameInfo.WIDTH * 0.05f),Color.BLACK)));
-                                dialog.show(GameMain.stage);
+                                new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+//
                             } else {
-
-                                Dialog dialog= new Dialog("",windowStyle);
-                                dialog.getTitleTable().add(new Label("Score Board", dialog.getTitleLabel().getStyle())).center().expand().top().padBottom(GameInfo.WIDTH * 0.1f);
-                                dialog.getContentTable().add(new Label
-                                        (Huds.greenPawnPlayer.name + " Won With Score " + Huds.greenPawnPlayer.playerScore
-                                                , new Label.LabelStyle(Huds.getNormalFont
-                                                (GameInfo.WIDTH * 0.05f),Color.BLACK)));
-                                dialog.show(GameMain.stage);
+                                new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+//
                             }
                         }
                     } else {
@@ -444,6 +381,10 @@ public class Players{
                         Huds.player1ScoreBoard.setBackground(d);
                         d = null;
                         Huds.player2ScoreBoard.setBackground(d);
+                        for (Pawns p : Huds.bluePawnPlayer.pawns) {
+                            p.toFront();
+
+                        }
 
                     }
                 }
