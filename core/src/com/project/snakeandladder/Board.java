@@ -1,13 +1,8 @@
 package com.project.snakeandladder;
 
-import static com.badlogic.gdx.math.Interpolation.fade;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.alpha;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.parallel;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.scaleTo;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -17,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -28,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -56,6 +51,9 @@ public class Board extends Table {
     Map<Integer,Integer> snakeCoordinates;
     private GamePlay gamePlay;
 
+    private float delayReq;
+
+
 
     public Board(GamePlay gamePlay) {
 
@@ -81,17 +79,10 @@ public class Board extends Table {
     public void movePawnTo(final int targetCellNo, final Pawns pawn,
                            int previousCellNo, final Players p) {
 
-        boolean isSnakeBite = false;
-        boolean isLadderClimbed = false;
+
         if(targetCellNo>previousCellNo && targetCellNo <= 100
                 && !ladderStartPos.contains(targetCellNo-1,true)
         && !snakeEndPos.contains(targetCellNo - 1, true)) {
-
-             for (int i = previousCellNo-1; i <targetCellNo-1;i++) {
-
-                     Cell targetCell = cells[i + 1];
-//                     Vector2 tmp= new Vector2();
-//                     targetCell.getActor().localToActorCoordinates(this,tmp);
 
                      if(p.getPlayerPawnMap().containsValue(targetCellNo)){
 
@@ -102,14 +93,13 @@ public class Board extends Table {
                              Cell previousCell = cells[t1];
                              Vector2 tmp1= new Vector2();
                              previousCell.getActor().localToActorCoordinates(this,tmp1);
-                             sequenceAction1.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
-                             sequenceAction1.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.015f, tmp1.y, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
+                             sequenceAction1.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.2f), Interpolation.linear));
+                             sequenceAction1.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.015f, tmp1.y, (0.2f), Interpolation.linear));
                              tmp1.crs(0,0);
 
                          }
-//                         sequenceAction.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f,tmp.y,0.5f,Interpolation.bounceOut));
+                         delayReq=(targetCellNo-previousCellNo)*0.4f;
                          pawn.addAction(Actions.sequence(sequenceAction1));
-//                         pawn.addAction(Actions.moveTo(tmp.x+GameInfo.WIDTH * 0.015f,tmp.y,0.2f, Interpolation.linear));
 
                      }
                      else {
@@ -121,12 +111,12 @@ public class Board extends Table {
                              Cell previousCell = cells[t];
                              Vector2 tmp1= new Vector2();
                              previousCell.getActor().localToActorCoordinates(this,tmp1);
-                             sequenceAction.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
-                             sequenceAction.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.03f, tmp1.y, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
+                             sequenceAction.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.2f), Interpolation.linear));
+                             sequenceAction.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.03f, tmp1.y, (0.2f), Interpolation.linear));
                              tmp1.crs(0,0);
 
                          }
-//                         sequenceAction.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f,tmp.y,0.5f,Interpolation.bounceOut));
+                         delayReq=(targetCellNo-previousCellNo)*0.4f;
                          pawn.addAction(Actions.sequence(sequenceAction));
 
                      }
@@ -142,22 +132,29 @@ public class Board extends Table {
                  }
                  addActor(pawn);
 
-             }
+
 
             pawn.setPositionOnBoard(targetCellNo);
             p.updatePlayerPawn(pawn.getPawnId(),pawn.getPosition());
             p.updatePlayerScore();
+            Timer.schedule(new Timer.Task(){
+                @Override
+                public void run() {
+
+                    ifAnotherPlayerPawnPresent(p, targetCellNo);
+                }
+            }, delayReq);
 
         }
         else {
 
             if (ladderStartPos.contains(targetCellNo - 1, true)  ) {
-                isLadderClimbed = true;
+
                 Cell targetCell = cells[ladderCoordinates.get(targetCellNo - 1)];
                 Vector2 tmp = new Vector2();
                 targetCell.getActor().localToActorCoordinates(this, tmp);
 
-                if (p.getPlayerPawnMap().containsValue(targetCellNo)) {
+                if (p.getPlayerPawnMap().containsValue(ladderCoordinates.get(targetCellNo-1)+1)) {
                     SequenceAction sequenceAction1 = new SequenceAction();
                     int t1=previousCellNo-1;
                     for(int j =1;j<=targetCellNo-previousCellNo;j++ ) {
@@ -165,14 +162,14 @@ public class Board extends Table {
                         Cell previousCell = cells[t1];
                         Vector2 tmp1= new Vector2();
                         previousCell.getActor().localToActorCoordinates(this,tmp1);
-                        sequenceAction1.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
-                        sequenceAction1.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.03f, tmp1.y, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
+                        sequenceAction1.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.2f), Interpolation.linear));
+                        sequenceAction1.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.015f, tmp1.y, (0.2f), Interpolation.linear));
                         tmp1.crs(0,0);
 
                     }
-                    sequenceAction1.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.015f,tmp.y,0.5f,Interpolation.linear));
+                    sequenceAction1.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.015f,tmp.y,0.2f,Interpolation.linear));
+                    delayReq=((targetCellNo-previousCellNo)*0.4f)+0.2f;
                     pawn.addAction(Actions.sequence(sequenceAction1));
-//                    pawn.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.015f, tmp.y, 0.5f, Interpolation.linear));
 
                 } else {
                     SequenceAction sequenceAction = new SequenceAction();
@@ -182,14 +179,15 @@ public class Board extends Table {
                         Cell previousCell = cells[t];
                         Vector2 tmp1= new Vector2();
                         previousCell.getActor().localToActorCoordinates(this,tmp1);
-                        sequenceAction.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
-                        sequenceAction.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.03f, tmp1.y, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
+                        sequenceAction.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.2f), Interpolation.linear));
+                        sequenceAction.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.03f, tmp1.y, (0.2f), Interpolation.linear));
                         tmp1.crs(0,0);
 
                     }
-                         sequenceAction.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f,tmp.y,0.5f,Interpolation.linear));
+                         sequenceAction.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f,tmp.y,0.2f,Interpolation.linear));
+                    delayReq=((targetCellNo-previousCellNo)*0.4f)+0.2f;
                     pawn.addAction(Actions.sequence(sequenceAction));
-//                    pawn.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f, tmp.y, 0.5f, Interpolation.linear));
+//                    pawn.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f, tmp.y, 0.2f, Interpolation.linear));
 
                 }
 
@@ -202,17 +200,24 @@ public class Board extends Table {
                 pawn.setPositionOnBoard(ladderCoordinates.get(targetCellNo - 1) + 1);
                 p.updatePlayerPawn(pawn.getPawnId(), pawn.getPosition());
                 p.updatePlayerScore();
-                ifAnotherPlayerPawnPresent(p, ladderCoordinates.get(targetCellNo - 1) + 1);
+                Timer.schedule(new Timer.Task(){
+                    @Override
+                    public void run() {
+
+                        ifAnotherPlayerPawnPresent(p, ladderCoordinates.get(targetCellNo - 1) + 1);
+                    }
+                }, delayReq);
+
 
             }
 
 
             if (snakeEndPos.contains(targetCellNo - 1, true)) {
-                isSnakeBite = true;
+
                 Cell targetCell = cells[snakeCoordinates.get(targetCellNo - 1)];
                 Vector2 tmp = new Vector2();
                 targetCell.getActor().localToActorCoordinates(this, tmp);
-                if (p.getPlayerPawnMap().containsValue(targetCellNo)) {
+                if (p.getPlayerPawnMap().containsValue(snakeCoordinates.get(targetCellNo-1)+1)) {
                     SequenceAction sequenceAction1 = new SequenceAction();
                     int t1=previousCellNo-1;
                     for(int j =1;j<=targetCellNo-previousCellNo;j++ ) {
@@ -220,14 +225,14 @@ public class Board extends Table {
                         Cell previousCell = cells[t1];
                         Vector2 tmp1= new Vector2();
                         previousCell.getActor().localToActorCoordinates(this,tmp1);
-                        sequenceAction1.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
-                        sequenceAction1.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.03f, tmp1.y, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
+                        sequenceAction1.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.2f), Interpolation.linear));
+                        sequenceAction1.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.015f, tmp1.y, (0.2f), Interpolation.linear));
                         tmp1.crs(0,0);
 
                     }
-                    sequenceAction1.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.015f,tmp.y,0.5f,Interpolation.linear));
+                    sequenceAction1.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.015f,tmp.y,0.2f,Interpolation.linear));
+                    delayReq=((targetCellNo-previousCellNo)*0.4f)+0.2f;
                     pawn.addAction(Actions.sequence(sequenceAction1));
-//                    pawn.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.015f, tmp.y, 0.5f, Interpolation.linear));
 
                 } else {
                     SequenceAction sequenceAction = new SequenceAction();
@@ -237,14 +242,15 @@ public class Board extends Table {
                         Cell previousCell = cells[t];
                         Vector2 tmp1= new Vector2();
                         previousCell.getActor().localToActorCoordinates(this,tmp1);
-                        sequenceAction.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
-                        sequenceAction.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.03f, tmp1.y, (0.5f/(targetCellNo-previousCellNo)), Interpolation.linear));
+                        sequenceAction.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.2f), Interpolation.linear));
+                        sequenceAction.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.03f, tmp1.y, (0.2f), Interpolation.linear));
                         tmp1.crs(0,0);
 
                     }
-                    sequenceAction.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f,tmp.y,0.5f,Interpolation.linear));
+                    sequenceAction.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f,tmp.y,0.2f,Interpolation.linear));
+                    delayReq=((targetCellNo-previousCellNo)*0.4f)+0.2f;
                     pawn.addAction(Actions.sequence(sequenceAction));
-//                    pawn.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f, tmp.y, 0.5f, Interpolation.linear));
+//                    pawn.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f, tmp.y, 0.2f, Interpolation.linear));
 
                 }
                 if (p.getPlayerTurnId() == 1) {
@@ -256,8 +262,16 @@ public class Board extends Table {
                 pawn.setPositionOnBoard(snakeCoordinates.get(targetCellNo - 1) + 1);
                 p.updatePlayerPawn(pawn.getPawnId(), pawn.getPosition());
                 p.updatePlayerScore();
-                ifAnotherPlayerPawnPresent(p, snakeCoordinates.get(targetCellNo - 1) + 1);
+                Timer.schedule(new Timer.Task(){
+                    @Override
+                    public void run() {
+
+                        ifAnotherPlayerPawnPresent(p, snakeCoordinates.get(targetCellNo - 1) + 1);
+                    }
+                }, delayReq);
+
             }
+
         }
 
                 p.updatePlayerPawn(pawn.getPawnId(),pawn.getPosition());
@@ -266,21 +280,9 @@ public class Board extends Table {
                     Huds.scorePlayer1.setText(p.getPlayerScore());
                 else
                     Huds.scorePlayer2.setText(p.getPlayerScore());
-                if(!isSnakeBite && !isLadderClimbed)
-                   ifAnotherPlayerPawnPresent(p, targetCellNo);
-//                if (p.getPlayerTurnId()==1 ){
-//                    for(Pawns t :GamePlay.player2.pawns )
-//                        if(t.getPosition()!=0)
-//                             addActor(t);
-//                }
-//                else{
-//                    for(Pawns t1 :GamePlay.player1.pawns )
-//                        if(t1.getPosition()!=0)
-//                            addActor(t1);
-//                }
+
 
             }
-
 
 
     void ifAnotherPlayerPawnPresent(Players player,int targetCellNo){
@@ -626,6 +628,14 @@ public class Board extends Table {
     public boolean isSnakeInitialized() {
         return snakeInitialized;
     }
+
+
+    public float getDelayReq() {
+        return delayReq;
+    }
+
+
+
 
 }
 

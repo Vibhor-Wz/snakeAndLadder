@@ -12,10 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.project.snakeandladder.gameover.GameOverDialog;
 
 import Helpers.GameInfo;
 import Helpers.Huds;
@@ -84,8 +86,9 @@ public class MainMenuScreen implements Screen {
         playButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
-                    game.setScreen(new GamePlay(game, stage, player1Name.getText(), player2Name.getText()));
+                GameMain.movesLeft=18;
+                game.setPlayerTurn(1);
+                game.setScreen(new GamePlay(game, stage, player1Name.getText(), player2Name.getText()));
 
             }
         });

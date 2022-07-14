@@ -1,11 +1,14 @@
 package com.project.snakeandladder;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.model.Animation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Timer;
 import com.project.snakeandladder.gameover.GameOverDialog;
 
 import java.util.HashMap;
@@ -81,23 +84,39 @@ public class Players{
                             Huds.player1ScoreBoard.setBackground(d);
                             for (Pawns p : Huds.greenPawnPlayer.pawns) {
                                 p.toFront();
+//                                p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                        Actions.scaleBy(-0.1f, -0.1f,1))));
+
                             }
+//                            for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
+//                                p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                        Actions.scaleBy(-0.2f, -0.2f,1))));
+//
+//                            }
                             if (GameMain.movesLeft > 0) {
                                 GameMain.movesLeft--;
                                 Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
+                                if(GameMain.movesLeft==0)
+                                    GameMain.movesLeft--;
                             } else {
-                                System.out.print("GameOver");
-                                Window.WindowStyle windowStyle = new Window.WindowStyle();
-                                windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
-                                windowStyle.titleFontColor = Color.BLACK;
-                                if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-                                    new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name,Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
-//
-                                } else {
+                                Timer.schedule(new Timer.Task(){
+                                    @Override
+                                    public void run() {
 
-                                    new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name,Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
-//
-                                }
+                                        System.out.print("GameOver");
+                                        Window.WindowStyle windowStyle = new Window.WindowStyle();
+                                        windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
+                                        windowStyle.titleFontColor = Color.BLACK;
+                                        if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore ) {
+                                            new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name,Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+
+                                        } else {
+
+                                            new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name,Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+
+                                        }
+                                    }
+                                }, board.getDelayReq()+0.2f);
 
                             }
                         } else {
@@ -109,7 +128,15 @@ public class Players{
                             Huds.player2ScoreBoard.setBackground(d);
                             for (Pawns p : Huds.bluePawnPlayer.pawns) {
                                 p.toFront();
+//                                p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                        Actions.scaleBy(-0.1f, -0.1f,1))));
+
+
                             }
+//                            for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
+//                                p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                        Actions.scaleBy(-0.2f, -0.2f,1))));
+//                            }
                         }
 
                     } else {
@@ -123,8 +150,8 @@ public class Players{
                         windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                         windowStyle.titleFontColor = Color.BLACK;
 
-                        new GameOverDialog("Score Board",windowStyle,p.name,p.playerScore).show(GameMain.stage);
-//
+                        new GameOverDialog("",windowStyle,p.name,p.playerScore).show(GameMain.stage);
+
                     }
                 }
                 else if(pawns[0].getPosition()+game.getRoll()>100 &&
@@ -140,22 +167,36 @@ public class Players{
                         Huds.player1ScoreBoard.setBackground(d);
                         for (Pawns p : Huds.greenPawnPlayer.pawns) {
                             p.toFront();
+//                            p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                    Actions.scaleBy(-0.1f, -0.1f,1))));
+
                         }
+//                        for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
+//                            p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                    Actions.scaleBy(-0.2f, -0.2f,1))));
+//                        }
                         if (GameMain.movesLeft > 0) {
                             GameMain.movesLeft--;
                             Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
+                            if(GameMain.movesLeft==0)
+                                GameMain.movesLeft--;
                         } else {
-                            System.out.print("GameOver");
-                            Window.WindowStyle windowStyle = new Window.WindowStyle();
-                            windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
-                            windowStyle.titleFontColor = Color.BLACK;
-                            if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-                                new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name,Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
-//
-                            } else {
-                                new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
-//
-                            }
+                            Timer.schedule(new Timer.Task(){
+                                @Override
+                                public void run() {
+                                    System.out.print("GameOver");
+                                    Window.WindowStyle windowStyle = new Window.WindowStyle();
+                                    windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
+                                    windowStyle.titleFontColor = Color.BLACK;
+                                    if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
+                                        new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name,Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+
+                                    } else {
+                                        new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+
+                                    }
+                                }
+                            }, board.getDelayReq()+0.2f);
 
                         }
                     } else {
@@ -167,7 +208,15 @@ public class Players{
                         Huds.player2ScoreBoard.setBackground(d);
                         for (Pawns p : Huds.bluePawnPlayer.pawns) {
                             p.toFront();
+//                            p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                    Actions.scaleBy(-0.1f, -0.1f,1))));
+
+
                         }
+//                        for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
+//                            p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                    Actions.scaleBy(-0.2f, -0.2f,1))));
+//                        }
                     }
             }
 
@@ -191,22 +240,39 @@ public class Players{
                             Huds.player1ScoreBoard.setBackground(d);
                             for (Pawns p : Huds.greenPawnPlayer.pawns) {
                                 p.toFront();
+//                                p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                        Actions.scaleBy(-0.1f, -0.1f,1))));
+
+
                             }
+//                            for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
+//                                p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                        Actions.scaleBy(-0.2f, -0.2f,1))));
+//
+//                            }
                             if (GameMain.movesLeft > 0) {
                                 GameMain.movesLeft--;
                                 Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
+                                if(GameMain.movesLeft==0)
+                                    GameMain.movesLeft--;
                             } else {
-                                System.out.print("GameOver");
-                                Window.WindowStyle windowStyle = new Window.WindowStyle();
-                                windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
-                                windowStyle.titleFontColor = Color.BLACK;
-                                if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-                                    new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
-//
-                                } else {
-                                    new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
-//
-                                }
+                                Timer.schedule(new Timer.Task(){
+                                    @Override
+                                    public void run() {
+                                        System.out.print("GameOver");
+                                        Window.WindowStyle windowStyle = new Window.WindowStyle();
+                                        windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
+                                        windowStyle.titleFontColor = Color.BLACK;
+                                        if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
+                                            new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+
+                                        } else {
+                                            new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+
+                                        }
+                                    }
+                                }, board.getDelayReq()+0.2f);
+
                             }
                         } else {
                             Huds.movePawnStack2.setVisible(false);
@@ -217,7 +283,15 @@ public class Players{
                             Huds.player2ScoreBoard.setBackground(d);
                             for (Pawns p : Huds.bluePawnPlayer.pawns) {
                                 p.toFront();
+//                                p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                        Actions.scaleBy(-0.1f, -0.1f,1))));
+
+
                             }
+//                            for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
+//                                p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                        Actions.scaleBy(-0.2f, -0.2f,1))));
+//                            }
                         }
                     } else {
                         System.out.println("Please wait for your turn");
@@ -229,8 +303,8 @@ public class Players{
                         Window.WindowStyle windowStyle = new Window.WindowStyle();
                         windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                         windowStyle.titleFontColor = Color.BLACK;
-                        new GameOverDialog("Score Board",windowStyle,p.name, p.playerScore).show(GameMain.stage);
-//
+                        new GameOverDialog("",windowStyle,p.name, p.playerScore).show(GameMain.stage);
+
                     }
                 }
                 else if(pawns[0].getPosition()+game.getRoll()>100 &&
@@ -246,22 +320,39 @@ public class Players{
                         Huds.player1ScoreBoard.setBackground(d);
                         for (Pawns p : Huds.greenPawnPlayer.pawns) {
                             p.toFront();
+//                            p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                    Actions.scaleBy(-0.1f, -0.1f,1))));
+
+
                         }
+//                        for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
+//                            p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                    Actions.scaleBy(-0.2f, -0.2f,1))));
+//
+//                        }
                         if (GameMain.movesLeft > 0) {
                             GameMain.movesLeft--;
                             Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
+                            if(GameMain.movesLeft==0)
+                                GameMain.movesLeft--;
                         } else {
-                            System.out.print("GameOver");
-                            Window.WindowStyle windowStyle = new Window.WindowStyle();
-                            windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
-                            windowStyle.titleFontColor = Color.BLACK;
-                            if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-                                new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+                            Timer.schedule(new Timer.Task(){
+                                @Override
+                                public void run() {
+                                    System.out.print("GameOver");
+                                    Window.WindowStyle windowStyle = new Window.WindowStyle();
+                                    windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
+                                    windowStyle.titleFontColor = Color.BLACK;
+                                    if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
+                                        new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
 
-                            } else {
-                                new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+                                    } else {
+                                        new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
 
-                            }
+                                    }
+                                }
+                            }, board.getDelayReq()+0.2f);
+
                         }
                     } else {
                         Huds.movePawnStack2.setVisible(false);
@@ -272,7 +363,16 @@ public class Players{
                         Huds.player2ScoreBoard.setBackground(d);
                         for (Pawns p : Huds.bluePawnPlayer.pawns) {
                             p.toFront();
+//                            p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                    Actions.scaleBy(-0.1f, -0.1f,1))));
+
+
                         }
+//                        for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
+//                            p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                    Actions.scaleBy(-0.2f, -0.2f,1))));
+//
+//                        }
                     }
                 }
             }
@@ -296,24 +396,37 @@ public class Players{
                             Huds.player1ScoreBoard.setBackground(d);
                             for (Pawns p : Huds.greenPawnPlayer.pawns) {
                                 p.toFront();
+//                                p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                        Actions.scaleBy(-0.1f, -0.1f,1))));
+
+
                             }
+//                            for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
+//                                p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                        Actions.scaleBy(-0.2f, -0.2f,1))));
+//                            }
                             if (GameMain.movesLeft > 0) {
                                 GameMain.movesLeft--;
                                 Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
+                                if(GameMain.movesLeft==0)
+                                    GameMain.movesLeft--;
                             } else {
+                                Timer.schedule(new Timer.Task(){
+                                    @Override
+                                    public void run() {
+                                        System.out.print("GameOver");
+                                        Window.WindowStyle windowStyle = new Window.WindowStyle();
+                                        windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
+                                        windowStyle.titleFontColor = Color.BLACK;
+                                        if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
+                                            new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
 
-                                Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
-                                System.out.print("GameOver");
-                                Window.WindowStyle windowStyle = new Window.WindowStyle();
-                                windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
-                                windowStyle.titleFontColor = Color.BLACK;
-                                if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-                                    new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+                                        } else {
+                                            new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
 
-                                } else {
-                                    new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
-
-                                }
+                                        }
+                                    }
+                                }, board.getDelayReq()+0.2f);
                             }
                         } else {
                             Huds.movePawnStack2.setVisible(false);
@@ -324,7 +437,16 @@ public class Players{
                             Huds.player2ScoreBoard.setBackground(d);
                             for (Pawns p : Huds.bluePawnPlayer.pawns) {
                                 p.toFront();
+//                                p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                        Actions.scaleBy(-0.1f, -0.1f,1))));
+
+
                             }
+//                            for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
+//                                p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                        Actions.scaleBy(-0.2f, -0.2f,1))));
+//
+//                            }
 
                         }
                     } else {
@@ -338,8 +460,8 @@ public class Players{
                         windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                         windowStyle.titleFontColor = Color.BLACK;
 
-                        new GameOverDialog("Score Board",windowStyle,p.name, p.playerScore).show(GameMain.stage);
-//
+                        new GameOverDialog("",windowStyle,p.name, p.playerScore).show(GameMain.stage);
+
                     }
                 }
                 else if(pawns[0].getPosition()+game.getRoll()>100 &&
@@ -355,24 +477,38 @@ public class Players{
                         Huds.player1ScoreBoard.setBackground(d);
                         for (Pawns p : Huds.greenPawnPlayer.pawns) {
                             p.toFront();
+//                            p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                    Actions.scaleBy(-0.1f, -0.1f,1))));
+//
+
                         }
+//                        for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
+//                            p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                    Actions.scaleBy(-0.2f, -0.2f,1))));
+//
+//                        }
                         if (GameMain.movesLeft > 0) {
                             GameMain.movesLeft--;
                             Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
+                            if(GameMain.movesLeft==0)
+                                GameMain.movesLeft--;
                         } else {
-//                            GameMain.movesLeft--;
-                            Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
-                            System.out.print("GameOver");
-                            Window.WindowStyle windowStyle = new Window.WindowStyle();
-                            windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
-                            windowStyle.titleFontColor = Color.BLACK;
-                            if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
-                                new GameOverDialog("Score Board",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
-//
-                            } else {
-                                new GameOverDialog("Score Board",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
-//
-                            }
+                            Timer.schedule(new Timer.Task(){
+                                @Override
+                                public void run() {
+                                    System.out.print("GameOver");
+                                    Window.WindowStyle windowStyle = new Window.WindowStyle();
+                                    windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
+                                    windowStyle.titleFontColor = Color.BLACK;
+                                    if (Huds.bluePawnPlayer.playerScore > Huds.greenPawnPlayer.playerScore) {
+                                        new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+
+                                    } else {
+                                        new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+
+                                    }
+                                }
+                            }, board.getDelayReq()+0.2f);
                         }
                     } else {
                         Huds.movePawnStack2.setVisible(false);
@@ -381,10 +517,19 @@ public class Players{
                         Huds.player1ScoreBoard.setBackground(d);
                         d = null;
                         Huds.player2ScoreBoard.setBackground(d);
+
                         for (Pawns p : Huds.bluePawnPlayer.pawns) {
                             p.toFront();
+//                            p.addAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                                    Actions.scaleBy(-0.1f, -0.1f,1))));
+
 
                         }
+//                        for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
+//                            p1.removeAction(Actions.forever(Actions.sequence(Actions.scaleBy(0.2f, 0.2f),
+//                                    Actions.scaleBy(-0.2f, -0.2f,1))));
+//
+//                        }
 
                     }
                 }

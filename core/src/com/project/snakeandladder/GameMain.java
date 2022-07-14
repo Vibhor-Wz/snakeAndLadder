@@ -1,17 +1,14 @@
 package com.project.snakeandladder;
 
-import static com.project.snakeandladder.PawnAndPlayerType.BLUE;
-import static com.project.snakeandladder.PawnAndPlayerType.GREEN;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.project.snakeandladder.gameover.GameOverDialog;
 
 import java.util.Random;
 
@@ -25,18 +22,21 @@ public class GameMain extends Game{
 
 	public static int roll;
 	public static int movesLeft;
+
+
 	private int playerTurn;
 	public static final int MAX_PLAYERS = 2;
-
-
+	public static GameMain game;
 	@Override
 	public void create () {
-		movesLeft=18;
+		game=this;
+//		movesLeft=18;
 		roll=new Random().nextInt(6)+1;
 		batch = new SpriteBatch();
 		stage= new Stage();
 
-		playerTurn = 1;
+//		playerTurn = 1;
+
 		setScreen(new MainMenuScreen(stage,this));
 		Gdx.input.setInputProcessor(stage);
 	}
@@ -78,6 +78,10 @@ public class GameMain extends Game{
 	public int getPlayerTurn() {
 		return playerTurn;
 	}
+	public void setPlayerTurn(int playerTurn) {
+		this.playerTurn = playerTurn;
+	}
+
 	public int getRoll() {
 		return roll;
 	}
