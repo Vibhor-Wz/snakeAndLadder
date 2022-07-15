@@ -9,9 +9,6 @@ public class Pawns extends Image{
 
     private int position;
     PawnAndPlayerType pawnType;
-
-
-
     private final int pawnId;
 
 
