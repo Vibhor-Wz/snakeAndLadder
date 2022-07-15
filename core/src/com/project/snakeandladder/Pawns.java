@@ -1,6 +1,8 @@
 package com.project.snakeandladder;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
 
@@ -11,13 +13,16 @@ public class Pawns extends Image{
     PawnAndPlayerType pawnType;
     private final int pawnId;
 
+    private RepeatAction turnAction;
+
 
 
     public Pawns(PawnAndPlayerType pawnType, int pawnId){
         super(new Texture("SnakeAndLadder/"+pawnType+".png"));
         this.pawnId=pawnId;
         setAlign(Align.center);
-
+        turnAction = Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+                                        Actions.scaleBy(-0.1f, -0.1f,1)));
         this.position= 0;
         this.pawnType = pawnType;
 
@@ -31,6 +36,11 @@ public class Pawns extends Image{
         this.position = position;
 
     }
+
+    public RepeatAction getTurnAction() {
+        return turnAction;
+    }
+
 
     public int getPawnId() {
         return pawnId;

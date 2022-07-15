@@ -2,8 +2,6 @@ package com.project.snakeandladder;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -145,12 +143,12 @@ public class Players{
                     Huds.player1ScoreBoard.setBackground(d);
                     for (Pawns pawn : Huds.greenPawnPlayer.pawns) {
                         pawn.toFront();
-//                        pawn.addAction(action);
+                        pawn.addAction(pawn.getTurnAction());
 
                     }
-//                    for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
-//                        p1.removeAction(action);
-//                    }
+                    for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
+                        p1.removeAction(p1.getTurnAction());
+                    }
                     if (GameMain.movesLeft > 0) {
                         GameMain.movesLeft--;
                         Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
@@ -206,13 +204,13 @@ public class Players{
                     Huds.player2ScoreBoard.setBackground(d);
                     for (Pawns p : Huds.bluePawnPlayer.pawns) {
                         p.toFront();
-//                        p.addAction(action);
+                        p.addAction(p.getTurnAction());
 
                     }
-//                    for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
-//                        p1.removeAction(action);
-//
-//                    }
+                    for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
+                        p1.removeAction(p1.getTurnAction());
+
+                    }
 
                 }
             } else {
@@ -254,11 +252,11 @@ public class Players{
                 Huds.player1ScoreBoard.setBackground(d);
                 for (Pawns p : Huds.greenPawnPlayer.pawns) {
                     p.toFront();
-//                    p.addAction(action);
+                    p.addAction(p.getTurnAction());
                 }
-//                for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
-//                    p1.removeAction(action);
-//                }
+                for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
+                    p1.removeAction(p1.getTurnAction());
+                }
                 if (GameMain.movesLeft > 0) {
                     GameMain.movesLeft--;
                     Huds.numberOFMovesLeft.setText(GameMain.movesLeft);
@@ -314,13 +312,13 @@ public class Players{
 
                 for (Pawns p : Huds.bluePawnPlayer.pawns) {
                     p.toFront();
-//                    p.addAction(action);
+                    p.addAction(p.getTurnAction());
 
                 }
-//                for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
-//                    p1.removeAction(action);
-//
-//                }
+                for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
+                    p1.removeAction(p1.getTurnAction());
+
+                }
 
             }
         }
