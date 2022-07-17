@@ -1,5 +1,6 @@
 package com.project.snakeandladder;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -66,7 +67,7 @@ public class MainMenuScreen implements Screen {
         Label.LabelStyle style1= new Label.LabelStyle();
         style1.font=Huds.getNormalFont(GameInfo.WIDTH*0.028f);
         style1.fontColor=Color.valueOf("#EEEBE8");
-        style1.background=labelBg();
+
         player1= new Label("Player1 Name",style1);
         player1.setAlignment(Align.center);
         player2= new Label("Player2 Name",style1);
@@ -88,6 +89,7 @@ public class MainMenuScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 GameMain.movesLeft=18;
                 game.setPlayerTurn(1);
+                Gdx.input.setOnscreenKeyboardVisible(false);
                 game.setScreen(new GamePlay(game, stage, player1Name.getText(), player2Name.getText()));
 
             }
@@ -111,14 +113,14 @@ public class MainMenuScreen implements Screen {
         pixmap.dispose();
         return drawable;
     }
-    public Drawable labelBg(){
-        Pixmap pixmap = new Pixmap((int) (GameInfo.WIDTH *0.35f), (int) (GameInfo.HEIGHT *0.03f), Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.valueOf("7E7E7E"));
-        pixmap.fill();
-        Drawable drawable = new TextureRegionDrawable(new Texture(pixmap));
-        pixmap.dispose();
-        return drawable;
-    }
+//    public Drawable labelBg(){
+//        Pixmap pixmap = new Pixmap((int) (GameInfo.WIDTH *0.35f), (int) (GameInfo.HEIGHT *0.03f), Pixmap.Format.RGBA8888);
+//        pixmap.setColor(Color.valueOf("7E7E7E"));
+//        pixmap.fill();
+//        Drawable drawable = new TextureRegionDrawable(new Texture(pixmap));
+//        pixmap.dispose();
+//        return drawable;
+//    }
     @Override
     public void show() {
 

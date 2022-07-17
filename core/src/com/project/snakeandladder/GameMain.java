@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.utils.Scaling;
 import com.project.snakeandladder.gameover.GameOverDialog;
 
 import java.util.Random;
@@ -64,45 +65,39 @@ public class GameMain extends Game{
 	private void rollDice(){
 		Random random= new Random();
 		roll= random.nextInt(6)+1;
-//		roll=1;
+
 	}
 
 	public void changePlayerTurn() {
 		playerTurn++;
+		float scaling1=0.0f;
+		float scaling2=0.0f;
+
 		if (playerTurn > MAX_PLAYERS) {
 			playerTurn = 1;
 		}
+
 		rollDice();
 		if (playerTurn == 1) {
 			Huds.diceRollPlayer1.setText(roll);
+//			for (Pawns p1:Huds.greenPawnPlayer.pawns){
+////				p.setSize(GameInfo.WIDTH * 0.05f,GameInfo.HEIGHT * 0.05185f);
+//				if(p1.getHeight()>GameInfo.HEIGHT * 0.05185f ) {
+//					scaling1 = (1 - (GameInfo.HEIGHT * 0.05185f) / (p1.getHeight())) ;
+//					p1.scaleBy(-scaling1);
+//
+//				}
+//			}
 		} else {
 			Huds.diceRollPlayer2.setText(roll);
-		}
-
-//		if(playerTurn == 1 && Huds.bluePawnPlayer != null && Huds.greenPawnPlayer != null){
-//			if(Huds.bluePawnPlayer.pawns != null){
-//				for (Pawns p: Huds.bluePawnPlayer.pawns){
-//					p.addAction(action);
+//			for (Pawns p:Huds.bluePawnPlayer.pawns){
+////				p.setSize(GameInfo.WIDTH * 0.05f,GameInfo.HEIGHT * 0.05185f);
+//				if(p.getHeight() > GameInfo.HEIGHT * 0.05185f) {
+//					scaling2 = (1 - (GameInfo.HEIGHT * 0.05185f) / (p.getHeight())) ;
+//					p.scaleBy(-scaling2);
 //				}
 //			}
-//			if(Huds.greenPawnPlayer.pawns != null){
-//				for (Pawns p: Huds.greenPawnPlayer.pawns){
-//					p.removeAction(action);
-//				}
-//			}
-//		}else if(Huds.greenPawnPlayer != null  && Huds.greenPawnPlayer != null){
-//			if(Huds.bluePawnPlayer.pawns != null){
-//				for (Pawns p: Huds.bluePawnPlayer.pawns){
-//					p.removeAction(action);
-//				}
-//			}
-//			if(Huds.greenPawnPlayer.pawns != null){
-//				for (Pawns p: Huds.greenPawnPlayer.pawns){
-//					p.addAction(action);
-//				}
-//			}
-//	}
-
+		  }
 		}
 
 
@@ -112,30 +107,6 @@ public class GameMain extends Game{
 
 	public void setPlayerTurn(int playerTurn) {
 		this.playerTurn = playerTurn;
-//		if(playerTurn == 1 && Huds.bluePawnPlayer != null && Huds.greenPawnPlayer != null){
-//			if(Huds.bluePawnPlayer.pawns != null){
-//				for (Pawns p: Huds.bluePawnPlayer.pawns){
-//					p.addAction(action);
-//				}
-//			}
-//			if(Huds.greenPawnPlayer.pawns != null){
-//				for (Pawns p: Huds.greenPawnPlayer.pawns){
-//					p.removeAction(action);
-//				}
-//			}
-//		}else if(Huds.greenPawnPlayer != null  && Huds.greenPawnPlayer != null){
-//			if(Huds.bluePawnPlayer.pawns != null){
-//				for (Pawns p: Huds.bluePawnPlayer.pawns){
-//					p.removeAction(action);
-//				}
-//			}
-//			if(Huds.greenPawnPlayer.pawns != null){
-//				for (Pawns p: Huds.greenPawnPlayer.pawns){
-//					p.addAction(action);
-//				}
-//			}
-//
-//		}
 
 	}
 

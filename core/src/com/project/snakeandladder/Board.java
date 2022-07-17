@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -80,7 +81,7 @@ public class Board extends Table {
                            int previousCellNo, final Players p) {
 
 
-        if(targetCellNo>previousCellNo && targetCellNo <= 100
+        if(targetCellNo > previousCellNo && targetCellNo <= 100
                 && !ladderStartPos.contains(targetCellNo-1,true)
         && !snakeEndPos.contains(targetCellNo - 1, true)) {
 
@@ -107,10 +108,12 @@ public class Board extends Table {
                          SequenceAction sequenceAction = new SequenceAction();
                          int t=previousCellNo-1;
                          for(int j =1;j<=targetCellNo-previousCellNo;j++ ) {
-                             t++;
-                             Cell previousCell = cells[t];
+
+                                 t++;
+//                             Cell previousCell = cells[t];
+
                              Vector2 tmp1= new Vector2();
-                             previousCell.getActor().localToActorCoordinates(this,tmp1);
+                             cells[t].getActor().localToActorCoordinates(this,tmp1);
                              sequenceAction.addAction(Actions.moveTo(tmp1.x + (cells[0].getMinWidth()/2f)- GameInfo.WIDTH * 0.03f , tmp1.y + cells[0].getMinHeight() / 2f, (0.2f), Interpolation.linear));
                              sequenceAction.addAction(Actions.moveTo(tmp1.x + GameInfo.WIDTH * 0.03f, tmp1.y, (0.2f), Interpolation.linear));
                              tmp1.crs(0,0);
@@ -131,8 +134,6 @@ public class Board extends Table {
 
                  }
                  addActor(pawn);
-
-
 
             pawn.setPositionOnBoard(targetCellNo);
             p.updatePlayerPawn(pawn.getPawnId(),pawn.getPosition());
@@ -187,11 +188,10 @@ public class Board extends Table {
                          sequenceAction.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f,tmp.y,0.2f,Interpolation.linear));
                     delayReq=((targetCellNo-previousCellNo)*0.4f)+0.2f;
                     pawn.addAction(Actions.sequence(sequenceAction));
-//                    pawn.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f, tmp.y, 0.2f, Interpolation.linear));
 
                 }
 
-                if (p.getPlayerTurnId() == 1) {
+                if (p.getPlayerTurnId() == 1 ) {
                     Huds.pawnBlueTbl.removeActor(pawn);
                 } else {
                     Huds.pawnGreenTbl.removeActor(pawn);
@@ -276,10 +276,16 @@ public class Board extends Table {
 
                 p.updatePlayerPawn(pawn.getPawnId(),pawn.getPosition());
                 p.updatePlayerScore();
+        Timer.schedule(new Timer.Task(){
+            @Override
+            public void run() {
+
                 if(p.getPlayerType().equals(PawnAndPlayerType.BLUE))
                     Huds.scorePlayer1.setText(p.getPlayerScore());
                 else
-                    Huds.scorePlayer2.setText(p.getPlayerScore());
+                    Huds.scorePlayer2.setText(p.getPlayerScore());            }
+        }, delayReq);
+
 
 
             }
@@ -307,7 +313,14 @@ public class Board extends Table {
 
             GamePlay.player2.updatePlayerPawn(key,0);
             GamePlay.player2.updatePlayerScore();
-            Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
+            Timer.schedule(new Timer.Task(){
+                @Override
+                public void run() {
+
+                    Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
+                }
+            }, delayReq);
+//            Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
             player.game.changePlayerTurn();
             Huds.movePawnStack2.setVisible(false);
             Huds.movePawnStack1.setVisible(true);
@@ -315,6 +328,17 @@ public class Board extends Table {
             Huds.player1ScoreBoard.setBackground(d);
             d = null;
             Huds.player2ScoreBoard.setBackground(d);
+            for (Pawns p : Huds.bluePawnPlayer.pawns) {
+                p.toFront();
+//                p.addAction(p.getTurnAction());
+
+            }
+//            for (Pawns p1 : Huds.greenPawnPlayer.pawns) {
+//                p1.removeAction(p1.getTurnAction());
+//                RepeatAction a = Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                        Actions.scaleBy(-0.1f, -0.1f,1)));
+//                p1.setTurnAction(a);
+//            }
 
         }
         else if(!isMoreThanOneColorPawnPresent(GamePlay.player1,targetCellNo) &&
@@ -338,7 +362,13 @@ public class Board extends Table {
 
             GamePlay.player1.updatePlayerPawn(key,0);
             GamePlay.player1.updatePlayerScore();
-            Huds.scorePlayer1.setText(GamePlay.player1.getPlayerScore());
+            Timer.schedule(new Timer.Task(){
+                @Override
+                public void run() {
+
+                    Huds.scorePlayer1.setText(GamePlay.player1.getPlayerScore());
+                }
+            }, delayReq);
             player.game.changePlayerTurn();
             GameMain.movesLeft++;
             Huds.movePawnStack2.setVisible(true);
@@ -347,7 +377,19 @@ public class Board extends Table {
             Huds.player2ScoreBoard.setBackground(d);
             d = null;
             Huds.player1ScoreBoard.setBackground(d);
+            for (Pawns pawn : Huds.greenPawnPlayer.pawns) {
+                pawn.toFront();
+//                pawn.addAction(pawn.getTurnAction());
 
+            }
+
+//            for (Pawns p1 : Huds.bluePawnPlayer.pawns) {
+//                p1.removeAction(p1.getTurnAction());
+//                RepeatAction a = Actions.forever(Actions.sequence(Actions.scaleBy(0.1f, 0.1f,1),
+//                        Actions.scaleBy(-0.1f, -0.1f,1)));
+//                p1.setTurnAction(a);
+//
+//            }
         }
     }
     public Boolean isMoreThanOneColorPawnPresent(Players player, int target){
