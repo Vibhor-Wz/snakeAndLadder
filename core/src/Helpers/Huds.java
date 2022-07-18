@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.DistanceFieldFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -17,12 +16,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.project.snakeandladder.Board;
 import com.project.snakeandladder.GameMain;
-import com.project.snakeandladder.GamePlay;
 import com.project.snakeandladder.PawnAndPlayerType;
 import com.project.snakeandladder.Players;
 
@@ -173,7 +170,7 @@ public class Huds extends Table {
         pixmap.drawRectangle(1,1, (int) (GameInfo.WIDTH*0.38f), (int) (GameInfo.HEIGHT*0.12f));
         player1ScoreBoard.background(new TextureRegionDrawable(new Texture(pixmap)));
         pixmap.dispose();
-        player1ScoreBoard.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
+        player1ScoreBoard.add(getPlayerNameAndPicture(playerName,1)).padRight(GameInfo.WIDTH*0.05f);
 
         player1ScoreBoard.add(getScoreDetailsOfPlayer1()).expandY().fill();
 
@@ -182,7 +179,7 @@ public class Huds extends Table {
     private Table getScoreBoardOfPlayer2(String playerName){
         player2ScoreBoard= new Table();
 
-        player2ScoreBoard.add(getPlayerNameAndPicture(playerName)).padRight(GameInfo.WIDTH*0.05f);
+        player2ScoreBoard.add(getPlayerNameAndPicture(playerName, 2)).padRight(GameInfo.WIDTH*0.05f);
 
         player2ScoreBoard.add(getScoreDetailsOfPlayer2()).expandY().fill();
 
@@ -193,6 +190,7 @@ public class Huds extends Table {
 
         Table infoPlayer1= new Table();
         Image infoImg= new Image(new Texture("info.png"));
+        infoImg.setVisible(false);
         infoPlayer1.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
 
         table.add(infoPlayer1).row();
@@ -215,6 +213,7 @@ public class Huds extends Table {
 
         Table infoPlayer2= new Table();
         Image infoImg= new Image(new Texture("info.png"));
+        infoImg.setVisible(false);
         infoPlayer2.add(infoImg).width(GameInfo.WIDTH*0.05f).height(GameInfo.WIDTH*0.05f);
 
         table.add(infoPlayer2).top().row();
@@ -232,14 +231,23 @@ public class Huds extends Table {
         });
         return table;
     }
-    private Table getPlayerNameAndPicture(String playerName){
-        Table table= new Table();
-        Label PlayerName= new Label(playerName,getLabelStyle(Color.YELLOW,GameInfo.WIDTH*0.02f));
+    private Table getPlayerNameAndPicture(String playerName, int i) {
+        Table table = new Table();
+        Label PlayerName= null;
+        Image playerImg= null;
+        if (i == 1){
+            PlayerName = new Label(playerName, getLabelStyle(Color.valueOf("#0075cf"), GameInfo.WIDTH * 0.02f));
+            playerImg= new Image(new Texture("blueSnake.jpg"));
+    }
+        else{
+            PlayerName = new Label(playerName, getLabelStyle(Color.valueOf("#49d849"), GameInfo.WIDTH * 0.02f));
+            playerImg= new Image(new Texture("greenSnake.jpg"));
+        }
         table.add(PlayerName).left().row();
 
         Table playerPicture=new Table();
-        Image playerImg= new Image(new Texture("circle.png"));
-        playerPicture.add(playerImg).width(GameInfo.WIDTH*0.2f).height(GameInfo.WIDTH*0.2f);
+
+        playerPicture.add(playerImg).width(GameInfo.WIDTH*0.16f).height(GameInfo.WIDTH*0.16f);
         table.add(playerPicture);
         return table;
     }

@@ -47,12 +47,13 @@ public class GameOverDialog extends Dialog {
         contentTbl.add(winnerDeclaration).width(GameInfo.WIDTH*0.7f).left();
         getContentTable().add(titleTable).padTop(-GameInfo.HEIGHT*0.14f).row();
         getContentTable().add(contentTbl).padTop(-GameInfo.HEIGHT*0.14f);
-
+        final GameOverDialog d=this;
         image.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameMain.game.setScreen(new MainMenuScreen(GameMain.stage,GameMain.game));
                 board.remove();
+                d.hide();
             }
         });
     }

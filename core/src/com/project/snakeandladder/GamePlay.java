@@ -40,7 +40,7 @@ public class GamePlay implements Screen {
     public GamePlay(GameMain game, Stage stage, String player1Name,String player2Name ) {
         this.game=game;
 
-        board = new Board(this);
+        board = new Board(this,game);
         player1 = new Players(game, player1Name, board, BLUE, 1);
         player2 = new Players(game, player2Name, board, GREEN, 2);
 
@@ -66,7 +66,10 @@ public class GamePlay implements Screen {
         hudsContainer.add(huds).top().expandX().fillX().expandY().fillY();
         stack.add(hudsContainer);
         container.add(stack).expand().fill();
-
+        for (Pawns p : player1.pawns) {
+            p.addAction(p.getTurnAction());
+            p.setPlayerTurn(true);
+        }
         this.stage=stage;
         stage.addActor(container);
     }
