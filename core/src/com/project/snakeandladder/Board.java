@@ -52,6 +52,8 @@ public class Board extends Table {
     Map<Integer,Integer> snakeCoordinates;
     private GamePlay gamePlay;
 
+    private boolean isPawnMoved;
+
     private float delayReq;
 
 
@@ -69,6 +71,7 @@ public class Board extends Table {
         setName("SnakeAndLadderBoard");
         Image bg = new Image(new Texture("bg.png"));
         bg.setColor(Color.valueOf("#fafca8"));
+        isPawnMoved=true;
 
         stack(bg, createBoard()).width(GameInfo.WIDTH).height(GameInfo.HEIGHT * 0.61f);
         getRandomValuesForSnakeStart();
@@ -100,6 +103,12 @@ public class Board extends Table {
 
                          }
                          delayReq=(targetCellNo-previousCellNo)*0.4f;
+                         Timer.schedule(new Timer.Task() {
+                             @Override
+                             public void run() {
+                                 isPawnMoved=true;
+                             }
+                         },delayReq);
                          pawn.addAction(Actions.sequence(sequenceAction1));
 
                      }
@@ -120,6 +129,12 @@ public class Board extends Table {
 
                          }
                          delayReq=(targetCellNo-previousCellNo)*0.4f;
+                         Timer.schedule(new Timer.Task() {
+                             @Override
+                             public void run() {
+                                 isPawnMoved=true;
+                             }
+                         },delayReq);
                          pawn.addAction(Actions.sequence(sequenceAction));
 
                      }
@@ -170,6 +185,12 @@ public class Board extends Table {
                     }
                     sequenceAction1.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.015f,tmp.y,0.2f,Interpolation.linear));
                     delayReq=((targetCellNo-previousCellNo)*0.4f)+0.2f;
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            isPawnMoved=true;
+                        }
+                    },delayReq);
                     pawn.addAction(Actions.sequence(sequenceAction1));
 
                 } else {
@@ -187,6 +208,12 @@ public class Board extends Table {
                     }
                          sequenceAction.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f,tmp.y,0.2f,Interpolation.linear));
                     delayReq=((targetCellNo-previousCellNo)*0.4f)+0.2f;
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            isPawnMoved=true;
+                        }
+                    },delayReq);
                     pawn.addAction(Actions.sequence(sequenceAction));
 
                 }
@@ -232,6 +259,12 @@ public class Board extends Table {
                     }
                     sequenceAction1.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.015f,tmp.y,0.2f,Interpolation.linear));
                     delayReq=((targetCellNo-previousCellNo)*0.4f)+0.2f;
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            isPawnMoved=true;
+                        }
+                    },delayReq);
                     pawn.addAction(Actions.sequence(sequenceAction1));
 
                 } else {
@@ -249,6 +282,12 @@ public class Board extends Table {
                     }
                     sequenceAction.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f,tmp.y,0.2f,Interpolation.linear));
                     delayReq=((targetCellNo-previousCellNo)*0.4f)+0.2f;
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            isPawnMoved=true;
+                        }
+                    },delayReq);
                     pawn.addAction(Actions.sequence(sequenceAction));
 //                    pawn.addAction(Actions.moveTo(tmp.x + GameInfo.WIDTH * 0.03f, tmp.y, 0.2f, Interpolation.linear));
 
@@ -287,7 +326,7 @@ public class Board extends Table {
         }, delayReq);
 
 
-
+isPawnMoved=false;
             }
 
 
@@ -313,13 +352,9 @@ public class Board extends Table {
 
             GamePlay.player2.updatePlayerPawn(key,0);
             GamePlay.player2.updatePlayerScore();
-            Timer.schedule(new Timer.Task(){
-                @Override
-                public void run() {
 
-                    Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
-                }
-            }, delayReq);
+            Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
+
 //            Huds.scorePlayer2.setText(GamePlay.player2.getPlayerScore());
             player.game.changePlayerTurn();
             Huds.movePawnStack2.setVisible(false);
@@ -362,13 +397,8 @@ public class Board extends Table {
 
             GamePlay.player1.updatePlayerPawn(key,0);
             GamePlay.player1.updatePlayerScore();
-            Timer.schedule(new Timer.Task(){
-                @Override
-                public void run() {
+            Huds.scorePlayer1.setText(GamePlay.player1.getPlayerScore());
 
-                    Huds.scorePlayer1.setText(GamePlay.player1.getPlayerScore());
-                }
-            }, delayReq);
             player.game.changePlayerTurn();
             GameMain.movesLeft++;
             Huds.movePawnStack2.setVisible(true);
@@ -677,6 +707,10 @@ public class Board extends Table {
     }
 
 
+
+    public boolean isPawnMoved() {
+        return isPawnMoved;
+    }
 
 
 }

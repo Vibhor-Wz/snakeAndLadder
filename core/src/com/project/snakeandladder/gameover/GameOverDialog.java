@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.project.snakeandladder.Board;
 import com.project.snakeandladder.GameMain;
 import com.project.snakeandladder.MainMenuScreen;
 
@@ -21,7 +22,7 @@ import Helpers.ImageResize;
 
 public class GameOverDialog extends Dialog {
 
-    public GameOverDialog(String title, WindowStyle windowStyle, String winnerName,int WinnerScore) {
+    public GameOverDialog(String title, WindowStyle windowStyle, String winnerName, int WinnerScore, final Board board) {
         super(title, windowStyle);
 
 
@@ -51,6 +52,7 @@ public class GameOverDialog extends Dialog {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameMain.game.setScreen(new MainMenuScreen(GameMain.stage,GameMain.game));
+                board.remove();
             }
         });
     }

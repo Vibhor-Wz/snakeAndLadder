@@ -70,8 +70,8 @@ public class Players{
         pawns[0].addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
-                listenerWork(p,pawns[0].getPawnId());
+                if(board.isPawnMoved())
+                   listenerWork(p,pawns[0].getPawnId());
 
 
             }
@@ -79,14 +79,15 @@ public class Players{
         pawns[1].addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
-                listenerWork(p,pawns[1].getPawnId());
+                if(board.isPawnMoved())
+                    listenerWork(p,pawns[1].getPawnId());
             }
         });
         pawns[2].addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                listenerWork(p,pawns[2].getPawnId());
+                if(board.isPawnMoved())
+                    listenerWork(p,pawns[2].getPawnId());
             }
         });
     }
@@ -134,6 +135,7 @@ public class Players{
 
         if (previousPos + game.getRoll() <= 100) {
             if (playerTurnId == game.getPlayerTurn() && previousPos != 100) {
+
                 board.movePawnTo(previousPos + game.getRoll(), pawns[pawnId-1], previousPos, player);
                 game.changePlayerTurn();
                 if (game.getPlayerTurn() == 2) {
@@ -178,7 +180,7 @@ public class Players{
                                     Huds.movePawnStack2.setVisible(false);
                                     Huds.player1ScoreBoard.setBackground((Drawable) null);
                                     Huds.player2ScoreBoard.setBackground((Drawable) null);
-                                    new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+                                    new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore,board).show(GameMain.stage);
                                     for (Pawns pawns: Huds.bluePawnPlayer.pawns) {
                                         pawns.clearActions();
                                         pawns.clearListeners();
@@ -193,7 +195,7 @@ public class Players{
                                     Huds.movePawnStack2.setVisible(false);
                                     Huds.player1ScoreBoard.setBackground((Drawable) null);
                                     Huds.player2ScoreBoard.setBackground((Drawable) null);
-                                    new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+                                    new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore,board).show(GameMain.stage);
                                     for (Pawns pawns: Huds.bluePawnPlayer.pawns) {
                                         pawns.clearActions();
                                         pawns.clearListeners();
@@ -241,7 +243,7 @@ public class Players{
                 windowStyle.titleFont = Huds.getNormalFont(GameInfo.WIDTH * 0.05f);
                 windowStyle.titleFontColor = Color.BLACK;
 
-                new GameOverDialog("",windowStyle,player.name, player.playerScore).show(GameMain.stage);
+                new GameOverDialog("",windowStyle,player.name, player.playerScore,board).show(GameMain.stage);
                 for (Pawns pawns: Huds.bluePawnPlayer.pawns) {
                     pawns.clearActions();
                     pawns.clearListeners();
@@ -294,7 +296,7 @@ public class Players{
                                 Huds.movePawnStack2.setVisible(false);
                                 Huds.player1ScoreBoard.setBackground((Drawable) null);
                                 Huds.player2ScoreBoard.setBackground((Drawable) null);
-                                new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore).show(GameMain.stage);
+                                new GameOverDialog("",windowStyle,Huds.bluePawnPlayer.name, Huds.bluePawnPlayer.playerScore,board).show(GameMain.stage);
                                 for (Pawns pawns: Huds.bluePawnPlayer.pawns) {
                                     pawns.clearActions();
                                     pawns.clearListeners();
@@ -308,7 +310,7 @@ public class Players{
                                 Huds.movePawnStack2.setVisible(false);
                                 Huds.player1ScoreBoard.setBackground((Drawable) null);
                                 Huds.player2ScoreBoard.setBackground((Drawable) null);
-                                new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore).show(GameMain.stage);
+                                new GameOverDialog("",windowStyle,Huds.greenPawnPlayer.name, Huds.greenPawnPlayer.playerScore,board).show(GameMain.stage);
                                 for (Pawns pawns: Huds.bluePawnPlayer.pawns) {
                                     pawns.clearActions();
                                     pawns.clearListeners();
